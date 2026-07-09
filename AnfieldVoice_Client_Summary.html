@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AnfieldVoice — Client Summary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+  @page { size: A4; margin: 2cm; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 11pt; color: #1a1a2e; line-height: 1.5;
+  }
+
+  /* Cover */
+  .cover { text-align: center; padding-top: 80px; page-break-after: always; }
+  .cover .ribbon {
+    display: inline-block; background: #1a3c6e; color: #fff;
+    padding: 6px 20px; border-radius: 4px; font-size: 10pt; font-weight: 600;
+    letter-spacing: 2px; margin-bottom: 40px;
+  }
+  .cover h1 { font-size: 42pt; font-weight: 800; color: #1a3c6e; margin-bottom: 6px; }
+  .cover .tagline { font-size: 16pt; color: #0d948b; font-weight: 600; margin-bottom: 30px; }
+  .cover .divider { width: 50px; height: 3px; background: #0d948b; margin: 0 auto 30px; border-radius: 2px; }
+  .cover .meta { font-size: 10pt; color: #6b7280; }
+  .cover .meta strong { color: #1a1a2e; }
+
+  /* Sections */
+  h2 { font-size: 18pt; font-weight: 700; color: #1a3c6e; margin: 24px 0 12px; border-bottom: 2px solid #0d948b; padding-bottom: 4px; }
+  h3 { font-size: 13pt; font-weight: 700; color: #1a3c6e; margin: 16px 0 8px; }
+
+  p { margin-bottom: 8px; }
+  ul { list-style: none; padding: 0; margin: 6px 0 12px; }
+  ul li { padding: 4px 0 4px 18px; position: relative; font-size: 10.5pt; }
+  ul li::before { content: "•"; position: absolute; left: 4px; color: #0d948b; font-weight: 700; }
+
+  /* Stats grid */
+  .stats { display: flex; gap: 12px; margin: 16px 0; }
+  .stat { flex: 1; background: #f0f4f8; border-radius: 8px; padding: 14px; text-align: center; }
+  .stat .num { font-size: 22pt; font-weight: 800; color: #0d948b; }
+  .stat .label { font-size: 9pt; color: #6b7280; margin-top: 2px; }
+
+  /* Two-column */
+  .two-col { display: flex; gap: 20px; margin: 12px 0; }
+  .col { flex: 1; }
+
+  /* Permission table */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 9.5pt; }
+  th { background: #1a3c6e; color: #fff; padding: 6px 10px; text-align: center; font-weight: 600; }
+  th:first-child { text-align: left; }
+  td { padding: 5px 10px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+  td:first-child { text-align: left; font-weight: 500; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .check { color: #0d948b; font-weight: 700; }
+  .cross { color: #dc2626; }
+  .lim { color: #d97706; font-size: 8.5pt; font-weight: 600; }
+
+  .feature-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+  .feat { flex: 1 1 30%; background: #f8fafc; border-radius: 6px; padding: 10px 12px; border-left: 3px solid #0d948b; }
+  .feat strong { display: block; font-size: 10pt; margin-bottom: 2px; }
+  .feat span { font-size: 9pt; color: #6b7280; }
+
+  .security-layer { margin: 4px 0; padding: 8px 14px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #0d948b; }
+  .security-layer h4 { font-size: 10.5pt; margin-bottom: 2px; }
+  .security-layer p { font-size: 9.5pt; color: #6b7280; margin: 0; }
+  .security-layer:nth-child(2) { border-left-color: #0891b2; }
+  .security-layer:nth-child(3) { border-left-color: #2563eb; }
+  .security-layer:nth-child(4) { border-left-color: #7c3aed; }
+  .security-layer:nth-child(5) { border-left-color: #db2777; }
+  .security-layer:nth-child(6) { border-left-color: #dc2626; }
+
+  .contact { background: #1a3c6e; color: #fff; border-radius: 10px; padding: 24px; text-align: center; margin-top: 20px; }
+  .contact h3 { color: #fff; font-size: 14pt; margin-bottom: 4px; }
+  .contact .phone { font-size: 20pt; font-weight: 700; margin: 6px 0; }
+
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="ribbon">RED CAPE TECHNOLOGIES (PTY) LTD</div>
+  <h1>AnfieldVoice</h1>
+  <p class="tagline">Intelligent Visitor &amp; Communication Management for Residential Estates</p>
+  <div class="divider"></div>
+  <p style="font-size:13pt; color:#1a3c6e; font-weight:600; margin-bottom:30px;">Secure &bull; Efficient &bull; Built for Estates</p>
+  <p class="meta"><strong>Prepared for:</strong> Body Corporate &amp; Estate Management</p>
+  <p class="meta"><strong>Date:</strong> July 2026 &nbsp;|&nbsp; <strong>Confidential</strong></p>
+  <p class="meta" style="margin-top:20px;"><strong>Red Cape Technologies (Pty) Ltd</strong><br>Reg: 2022/762895/07</p>
+</div>
+
+<!-- PAGE 1: THE PROBLEM + BENEFITS -->
+<h2>The Problem</h2>
+<p>Every day, the same domestic workers, school transport, deliveries, and visitors queue at the gate. Security treats every arrival as if they've never been before. Residents get calls about people they approved yesterday. No one has a complete record of who entered or when.</p>
+
+<div class="stats">
+  <div class="stat"><div class="num">15-25h</div><div class="label">Security phone time per week</div></div>
+  <div class="stat"><div class="num">60-70%</div><div class="label">Security on the phone, not the gate</div></div>
+  <div class="stat"><div class="num">50-80</div><div class="label">Verification calls to residents daily</div></div>
+  <div class="stat"><div class="num">8-15</div><div class="label">Vehicles queued at morning peak</div></div>
+</div>
+
+<h2>The Solution — AnfieldVoice</h2>
+<p>AnfieldVoice replaces the intercom, visitor logbook, delivery register, and resident phone directory with a single platform. Every arrival, every call, every access decision is recorded and searchable.</p>
+
+<h3>What you get</h3>
+<div class="feature-grid">
+  <div class="feat"><strong>&#128274; PIN-Based Visitor Ticketing</strong><span>Residents generate one-time or recurring PINs for every visitor. No PIN, no entry.</span></div>
+  <div class="feat"><strong>&#9733; Recurring Visitor Profiles</strong><span>Save domestic workers, school transport, gardeners. Daily authorisation in 5 seconds.</span></div>
+  <div class="feat"><strong>&#128230; Delivery Management</strong><span>Pre-approve, redirect, or deny deliveries. No more "we have a package" calls.</span></div>
+  <div class="feat"><strong>&#128200; Security Dashboard</strong><span>Real-time view of all active tickets. Admit with one click. Complete audit trail.</span></div>
+  <div class="feat"><strong>&#128241; Resident App</strong><span>Create tickets, call security, manage visitors, receive delivery alerts. iOS + Android.</span></div>
+  <div class="feat"><strong>&#128736; Administration Portal</strong><span>Resident management, visitor policies, analytics, audit export, estate announcements.</span></div>
+</div>
+
+<h3>What changes</h3>
+<div class="two-col">
+  <div class="col">
+    <p><strong>Before:</strong></p>
+    <ul>
+      <li>Every visitor processed from scratch</li>
+      <li>Handwritten gate logs or nothing</li>
+      <li>Residents interrupted all day</li>
+      <li>Deliveries = phone calls</li>
+    </ul>
+  </div>
+  <div class="col">
+    <p><strong>After AnfieldVoice:</strong></p>
+    <ul>
+      <li>Recurring visitors: 10-15 seconds at gate</li>
+      <li>Complete searchable audit trail</li>
+      <li>70% fewer resident verification calls</li>
+      <li>Every delivery logged and tracked</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PAGE 2: SECURITY -->
+<div class="page-break"></div>
+<h2>Security — Six Layers of Verification</h2>
+<p>No single point of failure. Every layer must be satisfied before anyone enters the estate.</p>
+
+<div class="security-layer">
+  <h4>1 &nbsp; Resident Authorisation</h4>
+  <p>Every visit begins with an explicit resident action. No PIN, no entry. No exceptions.</p>
+</div>
+<div class="security-layer">
+  <h4>2 &nbsp; Time-Bound PIN</h4>
+  <p>Each PIN is valid for today only. Expired PINs are rejected automatically. Yesterday's PIN won't work today.</p>
+</div>
+<div class="security-layer">
+  <h4>3 &nbsp; Ticket Retrieval</h4>
+  <p>A PIN retrieves exactly one ticket, for one visitor, on one day. Revoked tickets are immediately denied.</p>
+</div>
+<div class="security-layer">
+  <h4>4 &nbsp; Officer Verification</h4>
+  <p>The security officer sees the full ticket and visually confirms the visitor matches. Every admission is attributed.</p>
+</div>
+<div class="security-layer">
+  <h4>5 &nbsp; Exception Handling</h4>
+  <p>If anything doesn't match, the officer calls the resident directly from the dashboard. No admission without resolution.</p>
+</div>
+<div class="security-layer">
+  <h4>6 &nbsp; Complete Audit Trail</h4>
+  <p>Every decision is logged immutably — who created the ticket, when it was used, who admitted the visitor, and any exceptions.</p>
+</div>
+
+<h3>Data Protection</h3>
+<ul>
+  <li>All data encrypted in transit and at rest</li>
+  <li>PINs are one-way hashed — never stored in plaintext</li>
+  <li>POPIA-compliant with configurable retention policies</li>
+  <li>All administrative access is logged and auditable</li>
+</ul>
+
+<!-- PAGE 3: PERMISSIONS + VISITOR FLOWS -->
+<div class="page-break"></div>
+<h2>Access Control — Who Can Do What</h2>
+<p>Roles are additive. A person can be a resident AND a property admin. But a non-resident property admin never receives resident-only privileges like gate calls or visitor PINs.</p>
+
+<table>
+  <tr>
+    <th style="width:30%;">Function</th>
+    <th>Resident</th>
+    <th>Property Admin<br><span style="font-weight:400;font-size:8pt;">(Lives Here)</span></th>
+    <th>Property Admin<br><span style="font-weight:400;font-size:8pt;">(Remote)</span></th>
+    <th>Body Corp</th>
+  </tr>
+  <tr><td>Receive gate calls</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+  <tr><td>Generate visitor PINs</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+  <tr><td>Add / remove tenants</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+  <tr><td>Activate / suspend residents</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+  <tr><td>View apartment activity</td><td class="lim">Limited</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+  <tr><td>Estate administration</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+</table>
+
+<h2>How It Works — Three Visitor Scenarios</h2>
+
+<h3>1. Standard Visitor</h3>
+<p>Resident creates ticket &rarr; System generates one-day PIN &rarr; Visitor enters PIN at gate &rarr; Security verifies and admits &rarr; All logged. Total time: ~20-30 seconds.</p>
+
+<h3>2. Recurring Visitor (Daily — Domestic Worker, School Transport)</h3>
+<p>Resident taps saved profile &rarr; "Generate Today's PIN" (5 seconds) &rarr; Visitor enters PIN &rarr; Dashboard shows "Verified Profile" badge &rarr; Quick admit. Total time: ~10-15 seconds. No phone call needed.</p>
+
+<h3>3. Unexpected Visitor</h3>
+<p>Visitor has no PIN &rarr; Terminal calls resident via app &rarr; Resident answers and issues PIN &rarr; Standard admission. If resident doesn't answer, visitor is not admitted. Event is logged.</p>
+
+<h3>4. Delivery Management</h3>
+<p>Driver arrives &rarr; Resident pre-approval shown on dashboard (Accept / Hold at Gate / Redirect) &rarr; Delivery logged with driver details, time, and resolution. No phone calls.</p>
+
+<!-- PAGE 4: PLATFORM + CONTACT -->
+<div class="page-break"></div>
+<h2>Platform Components</h2>
+
+<div class="two-col">
+  <div class="col">
+    <h3>Resident Mobile App</h3>
+    <ul>
+      <li>Create visitor tickets and generate PINs</li>
+      <li>Manage recurring visitor profiles</li>
+      <li>Receive delivery notifications</li>
+      <li>One-touch call to security</li>
+      <li>Resident directory (opt-in)</li>
+    </ul>
+
+    <h3>Security Dashboard</h3>
+    <ul>
+      <li>Real-time ticket queue with status indicators</li>
+      <li>One-click admit/deny controls</li>
+      <li>Recurring visitor badges for quick ID</li>
+      <li>One-click resident calling from any ticket</li>
+      <li>Searchable audit log</li>
+      <li>Multi-language (English, Afrikaans, Zulu)</li>
+    </ul>
+  </div>
+  <div class="col">
+    <h3>Visitor Terminal</h3>
+    <ul>
+      <li>Weatherproof touchscreen at the gate</li>
+      <li>PIN entry and resident search</li>
+      <li>Direct call to resident</li>
+      <li>Customisable with estate rules</li>
+    </ul>
+
+    <h3>Administration Portal</h3>
+    <ul>
+      <li>Resident account management</li>
+      <li>Visitor policy configuration</li>
+      <li>Analytics and reporting</li>
+      <li>Audit export (PDF/CSV)</li>
+      <li>Estate-wide announcements</li>
+    </ul>
+  </div>
+</div>
+
+<h2>What You Get</h2>
+<p>After deposit is paid, your system is installed and operational within <strong>2-3 weeks</strong>:</p>
+
+<div class="two-col">
+  <div class="col">
+    <h3>Hardware Included</h3>
+    <ul>
+      <li><strong>1x Server</strong> — on-site, pre-configured, ready to run</li>
+      <li><strong>3x Tablets</strong> — for security dashboards at the gate</li>
+      <li><strong>2x Number Pads</strong> — weatherproof, outdoor rated</li>
+    </ul>
+  </div>
+  <div class="col">
+    <h3>Services Included</h3>
+    <ul>
+      <li><strong>Full installation</strong> — on-site setup and configuration</li>
+      <li><strong>Security staff training</strong> — hands-on dashboard training</li>
+      <li><strong>Resident onboarding</strong> — app setup support and materials</li>
+      <li><strong>Go-live support</strong> — on-site during first week of operation</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Key Benefits</h2>
+<div class="two-col">
+  <div class="col">
+    <ul>
+      <li>Gate processing time reduced by 60-80% for recurring visitors</li>
+      <li>Resident verification calls reduced by ~70%</li>
+      <li>Complete audit trail of every access event</li>
+      <li>Morning peak queue reduced by ~60%</li>
+    </ul>
+  </div>
+  <div class="col">
+    <ul>
+      <li>Security officers focus on security, not phone duty</li>
+      <li>POPIA-compliant resident data handling</li>
+      <li>Custom-branded app for your estate</li>
+      <li>SA-based support and local understanding</li>
+    </ul>
+  </div>
+</div>
+
+<h2>About Red Cape Technologies</h2>
+<p>Red Cape Technologies builds practical security and communication systems designed from the ground up for South African residential estates. No generic products adapted for estates — everything we build is purpose-built for estate living.</p>
+
+<table style="max-width:400px;">
+  <tr><td style="font-weight:600;">Company</td><td>Red Cape Technologies (Pty) Ltd</td></tr>
+  <tr><td style="font-weight:600;">Registration</td><td>2022 / 762895 / 07</td></tr>
+  <tr><td style="font-weight:600;">Registered</td><td>10 October 2022</td></tr>
+  <tr><td style="font-weight:600;">Status</td><td style="color:#0d948b; font-weight:600;">In Business</td></tr>
+</table>
+
+<div class="contact">
+  <h3>Contact</h3>
+  <p class="phone">Russell Miller — Director</p>
+  <p style="font-size:12pt; margin:4px 0;">083 700 0441</p>
+  <p style="font-size:9pt; opacity:0.7;">Red Cape Technologies (Pty) Ltd &bull; Reg: 2022/762895/07</p>
+</div>
+
+<p style="text-align:center; margin-top:20px; font-size:9pt; color:#94a3b8;">
+  AnfieldVoice is a product of Red Cape Technologies (Pty) Ltd<br>
+  Confidential &bull; July 2026
+</p>
+
+</body>
+</html>

@@ -1,0 +1,662 @@
+
+
+
+
+
+
+AnfieldVoice
+Intelligent Visitor & Communication Management
+for Residential Estates
+
+
+SECURE  ◆  EFFICIENT  ◆  BUILT FOR ESTATES
+
+
+
+
+
+
+
+
+Confidential Proposal
+Prepared July 2026
+
+Table of Contents
+
+1.  Executive Summary
+2.  Company Profile
+3.  The Problem
+4.  Solution Overview
+5.  Product Features
+6.  Security Architecture
+7.  Visitor Management Workflows
+8.  Recurring Visitor Profiles
+9.  Delivery Management
+10.  Resident Communication
+11.  Administration Portal
+12.  Security Dashboard
+13.  System Architecture
+14.  Benefits & ROI
+15.  Competitive Comparison
+16.  Implementation Plan
+17.  Support & Maintenance
+18.  Frequently Asked Questions
+19.  Future Roadmap
+20.  Commercial Proposal
+21.  Conclusion
+
+1. Executive Summary
+AnfieldVoice is a purpose-built visitor management and resident communication platform designed exclusively for residential estates, body corporates, and gated communities. Unlike generic intercom replacements or VoIP systems, AnfieldVoice integrates visitor ticketing, recurring visitor profiles, delivery management, secure resident communication, and a dedicated security dashboard into a single, unified platform.
+The platform was designed around three principles:
+Secure — layered visitor verification, complete audit trails, and privacy-first communication
+Efficient — daily PIN authorisation, recurring visitor profiles, and reduced gate congestion
+Built for Estates — apartment-focused workflows, body corporate administration, and integration-ready architecture
+For a 360-unit residential estate, AnfieldVoice reduces gate processing time by an estimated 60–80% for recurring visitors, eliminates approximately 40% of unnecessary resident-security phone calls, and provides a complete, searchable audit trail of every visitor, delivery, and access event. The platform pays for itself through operational efficiency alone, before accounting for the measurable improvement in resident satisfaction and security posture.
+This proposal outlines the complete AnfieldVoice platform, including product features, security architecture, visitor management workflows, implementation methodology, and commercial terms for deployment at estates of 100 to 500+ residential units.
+
+2. Company Profile
+About AnfieldVoice
+AnfieldVoice was founded to solve a specific problem: residential estates need more than an intercom. They need a comprehensive visitor management and communication system that reflects the operational realities of modern estate living — daily domestic workers, school transport, delivery services, contractors, and guests, all moving through a single gate.
+Our Approach
+We do not resell generic VoIP hardware with a custom label. AnfieldVoice is a vertically integrated solution — the mobile applications, server infrastructure, security dashboard, and administration portal are all designed and built as one system. The underlying telephony stack (SIP-based voice and video) uses battle-tested open-source components (FreeSWITCH, Kamailio) deployed on hardened, managed infrastructure.
+Technology Stack
+
+
+3. The Problem
+What Residential Estates Experience Today
+Gate Congestion: Every morning, the same school transport, domestic workers, and delivery vehicles queue at the gate. Security processes each one as if they have never visited before. Residents receive repeated phone calls to verify the same people they approved yesterday and the day before.
+No Audit Trail: When a resident disputes a delivery or questions who entered the estate, there is no centralised record. Gate logs, if they exist, are handwritten or stored in disconnected systems.
+Resident Frustration: Residents are interrupted throughout the day with verification calls. Many stop answering, creating security gaps. Others answer and approve without verifying, defeating the purpose.
+Security Inefficiency: Security officers spend 60–70% of their time on the phone with residents rather than monitoring the gate, patrolling the estate, or handling actual security incidents.
+Delivery Chaos: Multiple delivery services arrive daily — couriers, grocery delivery, online shopping. Some estates ban deliveries at the gate; others accept them and create liability. Neither approach is satisfactory.
+No Resident Directory: Residents have no easy way to contact neighbours, body corporate members, or estate management. Communication relies on WhatsApp groups, noticeboards, and word of mouth.
+The Cost of the Status Quo
+For a 360-unit estate processing an estimated 200–400 visitor arrivals per day, the cumulative cost of inefficient visitor management is substantial:
+Security staff hours lost to phone calls: ~15–25 hours per week
+Resident time lost to verification: ~2–5 minutes per call, multiple calls per day
+Gate congestion during peak hours: 7:00–9:00 AM and 4:00–6:00 PM
+Liability from undocumented deliveries and access events
+Resident dissatisfaction with estate management — a top-3 complaint in body corporate surveys
+
+4. Solution Overview
+AnfieldVoice replaces the estate intercom, visitor logbook, delivery register, and resident phone directory with a single, integrated platform. Every arrival, every call, and every access decision is recorded, searchable, and attributable.
+How It Works
+1. Resident Authorises a Visit
+Using the AnfieldVoice mobile app, a resident creates a Visitor Ticket: they enter the visitor's name, select a category, and optionally add vehicle details. The system generates a one-time PIN valid for today's date only. The resident shares this PIN with their visitor via SMS, WhatsApp, or any messaging app — directly from within AnfieldVoice.
+2. Visitor Arrives at the Gate
+The visitor approaches the Visitor Terminal at the gate — a weatherproof touchscreen kiosk or tablet. They enter their PIN. The system instantly retrieves their ticket and displays it on the Security Dashboard.
+3. Security Verifies and Admits
+The security officer sees the Visitor Ticket on their dashboard: who is expected, which resident authorised them, vehicle details if provided, and the ticket's validity. If everything matches, admission takes seconds. If something is different, the officer can call the resident directly from the dashboard with one click.
+4. Audit Trail Created
+Every step is logged: ticket creation, PIN validation, admission decision, security officer identity, and any exceptions. This data is available to body corporate administrators and never expires.
+Platform Components
+
+
+5. Product Features
+5.1 Resident Mobile Application
+A custom-branded application available on iOS and Android, built on the proven Linphone open-source telephony stack. The app provides:
+Visitor Ticketing — Create one-time or recurring visitor tickets with PIN generation
+Recurring Visitor Profiles — Save trusted visitors for rapid daily authorisation
+Delivery Management — Receive notifications, approve or redirect deliveries
+Voice & Video Calling — Call security, neighbours, or estate management via SIP
+Resident Directory — Searchable directory of consenting residents
+Gate Intercom — Answer gate calls with video (optional camera integration)
+Push Notifications — Alerts for visitor arrivals, deliveries, and estate announcements
+Call History — Complete log of all communication within the estate
+Emergency Contact — One-touch call to security or emergency services
+5.2 Visitor Terminal
+A weatherproof touchscreen interface deployed at the estate entrance gate(s):
+PIN Entry — Numeric keypad for visitor ticket PIN input
+Resident Search — Search by apartment number or resident name
+Direct Call — Initiate a SIP call to the resident's mobile app
+Visitor Instructions — Customisable welcome screen with estate rules
+QR Code Support — Scan QR codes from printed visitor passes (future)
+Ruggedised Hardware — IP65-rated enclosure for outdoor deployment
+5.3 Security Dashboard
+A real-time web interface for gate security officers:
+Live Ticket Queue — All active and upcoming visitor tickets for today
+Ticket Details — Resident name, apartment, visitor name, vehicle, category, PIN status
+Admit / Deny Controls — One-click admission logging with timestamp
+Recurring Visitor Flags — Visual indicator when a visitor has a verified profile
+One-Click Resident Call — Initiate a voice call to the resident directly from the ticket
+Audit Log — Searchable, filterable history of all access events
+Alert Notifications — Visual and audible alerts for expired tickets, denied access, or exceptions
+Multi-Language Support — Interface available in English, Afrikaans, Zulu, and other SA languages
+5.4 Administration Portal
+A web-based management console for body corporate administrators and estate managers:
+Resident Management — Add, remove, and manage resident accounts and apartment assignments
+Visitor Policy Configuration — Set estate-wide rules for visitor types, time restrictions, and PIN expiry
+Analytics Dashboard — Visitor volume trends, peak hours, recurring visitor statistics, gate processing times
+Audit Export — Generate PDF/CSV reports of all access events for body corporate meetings or security reviews
+Billing & Usage — Track per-unit usage if operating on a cost-recovery model
+Communication Broadcasts — Send estate-wide announcements to all residents
+Role-Based Access — Granular permissions for administrators, security supervisors, and committee members
+
+6. Security Architecture
+AnfieldVoice is designed on a defence-in-depth security model. No single component failure or compromise can grant unauthorised access to the estate or resident data.
+6.1 Communication Security
+
+6.2 Visitor Verification Layers
+AnfieldVoice implements a multi-layered verification model. No single factor grants access:
+Layer 1 — Resident Authorisation
+Every visit begins with an explicit resident action: creating a ticket and generating a PIN. No visitor can be processed without prior resident authorisation.
+Layer 2 — Time-Bound PIN
+PINs are valid for today's date only. Expired PINs are rejected automatically. The resident sets the validity window (default: 24 hours from creation).
+Layer 3 — Ticket Retrieval
+When a PIN is entered at the gate, the system retrieves exactly one ticket. If the ticket does not exist or has been revoked, access is denied.
+Layer 4 — Security Officer Verification
+The security officer reviews the ticket details — visitor name, vehicle, category — and visually confirms the visitor before admission. The officer's identity is recorded.
+Layer 5 — Exception Handling
+If any detail does not match (wrong vehicle, unexpected time, different person), the officer can call the resident directly from the dashboard. No admission without resolution.
+Layer 6 — Audit Trail
+Every decision is logged immutably. The audit trail includes: who created the ticket, when the PIN was used, which officer processed the visitor, the admission decision, and any exceptions.
+6.3 Data Security
+Resident data is encrypted at rest (AES-256) and in transit (TLS 1.3)
+PINs are hashed (bcrypt) — never stored in plaintext
+Database access is restricted by IP whitelist and certificate authentication
+All administrative access is logged and auditable
+POPIA-compliant data handling with configurable retention policies
+Regular automated security updates for all server components
+
+7. Visitor Management Workflows
+7.1 Standard Visitor (One-Time)
+For a dinner guest, family member, or service provider visiting once:
+Resident opens AnfieldVoice app → "New Visitor Ticket"
+Enters visitor name, selects category (Guest, Contractor, Service, etc.)
+Optionally adds vehicle details for faster gate processing
+System generates today's PIN (e.g., 483921)
+Resident shares PIN with visitor via the app (SMS, WhatsApp, or copy)
+Visitor arrives at gate → enters PIN on Visitor Terminal
+Security sees ticket on dashboard → verifies → admits
+Ticket marked as "Admitted" with timestamp and officer ID
+System records complete audit trail entry
+7.2 Recurring Visitor (Streamlined)
+For a domestic worker, scholar transport, or gardener who visits daily:
+Resident creates a Recurring Visitor Profile once (name, category, vehicle, schedule)
+Each morning, resident opens app → selects profile → "Generate Today's PIN"
+System generates PIN — resident shares it (or visitor knows to collect it daily)
+Visitor arrives at gate → enters PIN
+Security dashboard shows "Recurring Visitor — Verified Profile" with full details
+Officer visually confirms vehicle and person match the profile
+If match: quick admission. If mismatch: officer calls resident.
+Admission logged with recurring visitor reference
+7.3 Unexpected Visitor
+For a visitor who arrives without a PIN:
+Visitor approaches gate → does not have a PIN
+Visitor uses terminal to search for resident by name or apartment number
+Terminal initiates a SIP call to the resident's mobile app
+Resident receives call with caller ID "Estate Gate"
+If resident answers and approves, they can generate a PIN on the spot via the app
+Visitor enters PIN → standard verification → admission
+If resident does not answer, visitor is not admitted
+Event is logged as "Unexpected — No PIN — No Resident Response"
+7.4 Denied Access
+When a visitor is denied admission, the system records:
+Date and time of attempt
+PIN entered (if any) and validation result
+Reason for denial (expired PIN, revoked ticket, resident declined, no response)
+Security officer who processed the denial
+Any resident communication attempt and outcome
+
+8. Recurring Visitor Profiles
+This is one of AnfieldVoice's strongest differentiators. Most residential estates receive the same visitors every day — scholar transport, domestic workers, caregivers, garden services, contractors, and regular couriers. Traditional intercom systems treat every arrival as a new visitor, forcing security to repeat the same verification process daily.
+AnfieldVoice introduces Recurring Visitor Profiles, allowing residents to register trusted, regularly visiting individuals while still maintaining daily security controls.
+8.1 Profile Structure
+
+8.2 Daily Workflow
+Rather than completing the full visitor form every day, the resident simply:
+Opens the AnfieldVoice app
+Selects "Use Existing Profile"
+Chooses the relevant recurring visitor from their saved list
+Taps "Generate Today's PIN"
+The entire process takes under 5 seconds. The PIN is still required — this confirms that the resident expects this person today, preventing unauthorised entry by someone who was admitted yesterday.
+8.3 Security Benefits
+Vehicle and registration are already recorded — no verbal description at the gate
+Resident has previously approved the visitor — profile creation is a deliberate act
+Security becomes familiar with the individual over time — anomalies stand out
+Daily PIN requirement prevents assumption-based access
+Complete audit trail links every visit back to the resident's explicit authorisation
+8.4 Operational Benefits
+Gate processing time for recurring visitors: ~10–15 seconds vs. 60–90 seconds for new visitors
+Reduced resident interruption: no daily verification calls for known visitors
+Morning peak congestion reduced by an estimated 40–60%
+Security officers can focus on unfamiliar visitors and actual security duties
+
+Marketing Position: "Designed for real estate operations — not just visitors." This differentiates AnfieldVoice from generic intercom replacements that treat every arrival identically.
+
+9. Delivery Management
+Delivery management is one of the most persistent challenges for residential estates. Multiple courier services, grocery deliveries, and online shopping orders arrive daily. AnfieldVoice provides a structured workflow that balances resident convenience with estate security.
+9.1 Delivery Workflow
+Notification: Resident receives a push notification when a delivery is en route (integration with delivery service APIs or manual entry by security).
+Pre-Approval: Resident can pre-approve the delivery from the app: "Accept," "Hold at Gate," or "Redirect." If no response, estate policy determines default handling.
+Arrival: Delivery driver identifies the delivery at the Visitor Terminal. Security sees the resident's pre-approval status on the dashboard.
+Processing: Approved: driver proceeds to the apartment or designated drop-off point. Hold at Gate: package is logged and stored at security. Redirect: resident specifies an alternative (leave with neighbour, deliver tomorrow, etc.).
+Confirmation: Resident receives delivery confirmation with timestamp. Delivery event is logged in the audit trail with driver details, time, and resolution.
+9.2 Benefits
+Reduces gate congestion by pre-processing delivery decisions
+Eliminates "we have a package for apartment X" phone calls
+Creates accountability — every delivery is logged with driver details
+Resident maintains control without being interrupted
+Estate policy is consistently applied, not dependent on which security officer is on duty
+
+10. Resident Communication
+AnfieldVoice is not just a visitor management system — it is the estate's communication backbone. It replaces the fragmented mix of intercoms, WhatsApp groups, noticeboards, and phone trees with a single, private network.
+10.1 Communication Features
+
+10.2 Privacy Model
+AnfieldVoice operates as a closed network. Residents are not reachable from outside the estate unless they explicitly enable external calling. By default:
+Residents can call security, the gate, and other consenting residents
+Security and the gate can call residents
+Residents cannot be called from outside the estate network (configurable)
+Resident phone numbers are never exposed to other residents — calls use apartment numbers or names
+All communication is encrypted (TLS + SRTP)
+
+11. Administration Portal
+The Administration Portal is the central management console for body corporate administrators, estate managers, and security supervisors. It provides complete control over the AnfieldVoice deployment without requiring technical expertise.
+11.1 Resident Management
+Add, edit, and deactivate resident accounts
+Assign residents to apartments / units
+Manage resident directory visibility preferences
+Bulk import from existing resident databases (CSV, Excel)
+Track account activation status and app installation
+11.2 Visitor Policy Configuration
+Set PIN validity duration (default: 24 hours)
+Configure visitor categories available to residents
+Set maximum daily visitor tickets per unit
+Define restricted hours (e.g., no visitors after 22:00)
+Configure delivery handling policies
+11.3 Analytics & Reporting
+Visitor volume dashboard — daily, weekly, monthly trends
+Peak hour analysis for security staffing optimisation
+Recurring visitor statistics by category
+Gate processing time averages and outliers
+Denied access events with reasons
+Security officer performance metrics
+Export reports as PDF or CSV for body corporate meetings
+11.4 Audit & Compliance
+Complete, searchable audit trail of all access events
+Filter by date range, resident, visitor, category, or outcome
+Immutable logs — events cannot be modified or deleted
+Configurable data retention policies (POPIA-compliant)
+Audit export for security incidents or insurance claims
+
+12. Security Dashboard
+The Security Dashboard is the primary interface for gate security officers. It is designed for speed and clarity — an officer can process a visitor in seconds without training on complex software.
+12.1 Dashboard Layout
+The dashboard presents a real-time, auto-refreshing view of all active and upcoming visitor tickets for the current day:
+
+12.2 Key Capabilities
+Real-time ticket queue with colour-coded status indicators
+"Recurring Visitor — Verified Profile" badge for pre-registered visitors
+One-click resident calling from any ticket
+Search: find tickets by resident name, visitor name, apartment, or PIN
+Alert panel: expired tickets, denied access, exceptions requiring attention
+Multi-language interface (English, Afrikaans, Zulu, and others)
+Works on standard office monitors, tablets, or ruggedised touchscreens
+Low-bandwidth operation — functions reliably on basic internet connections
+12.3 Officer Accountability
+Each officer logs in with unique credentials
+All admission/denial decisions are attributed to the logged-in officer
+Shift handover: on-duty officer is tracked for audit purposes
+Supervisor view: monitor multiple gate stations from a single interface
+
+13. System Architecture
+AnfieldVoice is built on a modular, open-standards architecture that ensures reliability, scalability, and future extensibility.
+13.1 Architecture Overview
+                            RESIDENT MOBILE APPS
+        +-------------+  +-------------+  +-------------+
+        |   iOS App   |  | Android App |  | Desktop App |
+        | (Linphone)  |  | (Linphone)  |  | (Linphone)  |
+        +------+------+  +------+------+  +------+------+
+               |                |                |
+               +----------------+----------------+
+                                |  TLS 1.3
+                                |
+                    ANFIELDVOICE SERVER
+        +---------------------------------------------+
+        |          KAMAILIO (SIP Proxy)               |
+        |   Registration . Routing . Load Balance     |
+        +--------------------+------------------------+
+                             |
+        +--------------------+------------------------+
+        |          FREESWITCH (Media Server)          |
+        |   Voice . Video . Conferencing . IVR        |
+        +--------------------+------------------------+
+                             |
+        +--------------------+------------------------+
+        |          POSTGRESQL DATABASE                |
+        |   Residents . Tickets . Audit . Config      |
+        +--------------------+------------------------+
+                             |
+        +--------------------+------------------------+
+        |          REST API / WebSocket               |
+        |   Mobile Provisioning . Dashboards . Admin  |
+        +--------------------+------------------------+
+                             |
+                     ESTATE INFRASTRUCTURE
+        +-------------+  +-------------+  +-------------+
+        |   Visitor   |  |  Security   |  |    Admin    |
+        |  Terminal   |  |  Dashboard  |  |   Portal    |
+        |   (Gate)    |  | (Gate/Off.) |  | (Remote)    |
+        +-------------+  +-------------+  +-------------+
+13.2 Technology Stack Details
+
+13.3 Deployment Options
+On-Premises — Server hardware deployed in the estate's network room or security office
+Cloud-Hosted — AnfieldVoice-managed cloud deployment (AWS Johannesburg region)
+Hybrid — Core server on-premises with cloud backup and failover
+13.4 Scalability
+The architecture is designed to scale well beyond 360 units:
+Kamailio handles 10,000+ concurrent SIP registrations on modest hardware
+FreeSWITCH scales horizontally — additional media servers for larger estates
+PostgreSQL supports read replicas for reporting without impacting transactions
+Same architecture serves estates from 50 to 5,000+ units without fundamental changes
+
+14. Benefits & ROI
+14.1 Quantitative Benefits
+Estimated impact for a 360-unit estate processing approximately 300 visitor/delivery arrivals per day:
+
+14.2 Qualitative Benefits
+Improved resident satisfaction — faster gate processing, fewer interruptions
+Enhanced security posture — layered verification, complete audit trail
+Professional estate image — branded app, modern visitor terminal
+Security officer job satisfaction — less phone work, more actual security
+Body corporate transparency — data-driven reports for AGMs and committee meetings
+Reduced liability — documented access decisions for insurance and dispute resolution
+14.3 Return on Investment
+AnfieldVoice delivers ROI through multiple channels:
+Operational Efficiency — Security staff reallocation from phone duty to active security/patrol
+Risk Reduction — Documented audit trail reduces liability exposure and insurance costs
+Resident Retention — Improved living experience contributes to property value
+Process Automation — Eliminates manual logbooks, paper forms, and handwritten registers
+For a 360-unit estate, the operational savings alone typically recover the platform cost within 12–18 months, depending on deployment configuration and security staffing model.
+
+15. Competitive Comparison
+AnfieldVoice competes across two categories: traditional intercom/VoIP vendors and modern visitor management platforms.
+
+15.1 Key Differentiators
+Recurring Visitor Profiles
+No competitor offers native, purpose-built recurring visitor management. This feature alone transforms daily gate operations for estates with domestic workers, scholar transport, and regular service providers.
+Built for Estates, Not Adapted
+ButterflyMX and similar platforms were designed for US apartment buildings with different operational models. AnfieldVoice was designed for South African residential estates — gated communities with body corporate governance, security officers, and the specific visitor categories relevant to SA estate living.
+Complete Platform, Not a Component
+AnfieldVoice is not a VoIP system with visitor management added, nor a visitor management system with VoIP added. Both were designed together as one platform. The result is a seamless experience: the security dashboard, visitor terminal, resident app, and administration portal all share the same data model.
+Open Standards, Not Vendor Lock-In
+Built on SIP, TLS/SRTP, PostgreSQL, and REST APIs — industry-standard protocols and open-source components. The estate is never locked into proprietary hardware or protocols.
+
+16. Implementation Plan
+AnfieldVoice follows a phased deployment methodology designed to minimise disruption to estate operations while ensuring a successful rollout.
+16.1 Phased Rollout
+
+16.2 Total Timeline
+Estimated total: 10–14 weeks from contract signing to full operational deployment. Timeline varies based on estate size, existing infrastructure, and resident engagement.
+16.3 Resident Adoption Strategy
+Resident adoption is the critical success factor. AnfieldVoice includes a structured adoption programme:
+Pre-launch communication: body corporate notice, welcome letter, FAQ document
+Launch event: on-site app installation support, live demonstration
+App Store / Google Play: branded app listing with estate-specific instructions
+Onboarding wizard: first-launch walkthrough, account activation, directory opt-in
+Ongoing support: in-app help, resident support email/phone, quarterly tips newsletter
+Incentive: early-adopter recognition, reduced gate wait times as immediate benefit
+
+17. Support & Maintenance
+17.1 Support Tiers
+
+17.2 Maintenance Services
+Automated security updates for all server components (weekly)
+Database backups (hourly incremental, daily full, encrypted off-site)
+SIP infrastructure monitoring (registration health, call quality metrics)
+Mobile app updates (iOS App Store and Google Play releases)
+Quarterly platform health review with body corporate / estate management
+Annual disaster recovery test
+17.3 Service Level Agreement
+99.5% platform uptime guarantee (excluding scheduled maintenance)
+Scheduled maintenance: Sunday 02:00–04:00, with 72-hour advance notice
+Monthly uptime report included in management dashboard
+Penalty clauses for SLA breaches (negotiated per deployment agreement)
+
+18. Frequently Asked Questions
+Q: What hardware does the estate need to provide?
+
+A: AnfieldVoice requires: (1) a visitor terminal at the gate — typically a weatherproof touchscreen tablet or all-in-one PC, (2) a monitor/computer for the security dashboard, (3) a server or cloud subscription for the AnfieldVoice platform. We provide hardware recommendations and procurement assistance. The estate's existing internet connection is sufficient in most cases.
+Q: Does this replace our existing intercom system?
+
+A: Yes. AnfieldVoice replaces the intercom, visitor logbook, and resident directory with an integrated digital platform. If the estate has existing VoIP hardware (e.g., SIP door stations), we can often integrate with it.
+Q: What happens if the internet goes down?
+
+A: The system includes an offline fallback mode. The visitor terminal caches today's tickets locally. If the internet connection is lost, the terminal continues to validate PINs against the cache. Calls between residents and security may be affected, but gate operations continue. All cached events sync when connectivity is restored.
+Q: Can residents use their existing phone numbers?
+
+A: AnfieldVoice uses SIP — it operates over data (Wi-Fi or cellular), not traditional phone networks. Residents use the AnfieldVoice app. Their existing phone numbers are unaffected. The app can also be configured to forward calls to cellular numbers if desired.
+Q: How secure are the PINs?
+
+A: PINs are six-digit, valid for one day only, and hashed in the database (bcrypt). A PIN can only be used once, for one ticket. Brute-force protection locks the terminal after repeated invalid attempts. PINs cannot be reverse-engineered from the database.
+Q: What about residents who don't use smartphones?
+
+A: For residents without smartphones, we offer alternative workflows: (1) they can call security to create a visitor ticket on their behalf, (2) they can create tickets via a web portal, or (3) unticketed visitors can call the resident from the gate terminal using the apartment number. The system is designed for smartphone-first operation but does not exclude non-smartphone residents.
+Q: Can we customise the app with our estate's branding?
+
+A: Yes. Each estate deployment receives a custom-branded build of the AnfieldVoice app with the estate's logo, name, and colour scheme. The app appears under your estate's name in the Apple App Store and Google Play Store.
+Q: How does this compare to ButterflyMX?
+
+A: ButterflyMX is a US-focused intercom replacement with basic visitor management. AnfieldVoice includes everything ButterflyMX offers plus: recurring visitor profiles, full delivery management, a resident directory, estate broadcasts, custom branding, on-premises deployment option, multi-language support for South African languages, and local SA-based support. See the competitive comparison table in Section 15.
+Q: What does it cost?
+
+A: Please see the Commercial Proposal in Section 20. Pricing is based on unit count, deployment model, and selected features. We provide transparent per-unit pricing with no hidden costs.
+Q: How long does implementation take?
+
+A: 10–14 weeks from contract signing to full operational deployment. See the Implementation Plan in Section 16 for the detailed phase breakdown.
+
+19. Future Roadmap
+AnfieldVoice is under active development. The following capabilities are on our 12–24 month roadmap. All roadmap items are developed in consultation with our estate partners to ensure they address real operational needs.
+19.1 Near-Term (6–12 Months)
+
+19.2 Medium-Term (12–24 Months)
+
+19.3 Long-Term Vision
+AI-powered anomaly detection — flagging unusual visitor patterns automatically
+Resident community features — secure neighbourhood social platform
+Smart home integration — intercom, access control, and home automation convergence
+Municipal integration — direct connection to SAPS, armed response, and emergency services
+
+20. Commercial Proposal
+The following is an indicative commercial proposal for a 360-unit residential estate. Final pricing is confirmed after the Discovery & Planning phase (Phase 1), when specific hardware, integration, and customisation requirements are assessed.
+20.1 Platform Licensing
+
+* Platform licensing is based on total registered units, not active users. The estate pays a fixed monthly fee regardless of individual resident adoption rates.
+20.2 One-Time Setup
+
+20.3 Ongoing Services
+
+20.4 Illustrative Total (360 Units, Cloud-Hosted)
+
+Year 1 all-in cost: approximately R 1,100 – R 1,700 per unit. Year 2 onwards: approximately R 870 – R 1,310 per unit per year (recurring only).
+20.5 Payment Terms
+One-time setup: 50% on contract signing, 50% on go-live
+Recurring licensing: monthly or annual invoicing (3% discount for annual prepayment)
+Standard payment terms: 30 days from invoice
+Minimum commitment: 12 months initial term, then month-to-month
+
+21. Conclusion
+AnfieldVoice represents a fundamental shift in how residential estates manage visitors, deliveries, and resident communication. It is not an intercom upgrade — it is an operational platform designed around the way estates actually function.
+Why AnfieldVoice
+Purpose-Built
+Every feature — visitor ticketing, recurring visitor profiles, delivery management, security dashboard — was designed for residential estates. No generic components repurposed from office or enterprise systems.
+Security Without Friction
+Multi-layered verification that actually speeds up processing rather than slowing it down. Residents stay in control. Security stays informed. Visitors move through efficiently.
+Complete Platform
+Voice, video, visitor management, delivery management, resident directory, administration, and analytics — one platform, one vendor, one support contract.
+South African Context
+Designed for SA estates: body corporate governance, security officer workflows, multi-language support, POPIA compliance, local support team, and understanding of the specific visitor categories and operational patterns of SA residential living.
+Scalable Foundation
+The architecture that serves a 360-unit estate today scales to 5,000+ units without fundamental rearchitecture. The investment is future-proof.
+
+
+We welcome the opportunity to present AnfieldVoice in detail
+and to demonstrate the platform for your estate committee.
+
+
+Contact
+[Contact Name]
+[Title]
+[Email Address]
+[Phone Number]
+[Website URL]
+
+
+SECURE  ◆  EFFICIENT  ◆  BUILT FOR ESTATES
+
+© 2026 AnfieldVoice. All rights reserved. Confidential.
+Layer | Technology | Purpose
+Mobile Apps | Custom-branded iOS & Android (Linphone core) | Resident & security communication
+SIP Proxy | Kamailio | Registration, routing, load balancing
+Media Server | FreeSWITCH | Voice & video call processing
+Database | PostgreSQL | Visitor records, audit trails, resident data
+API Layer | REST / WebSocket | Mobile provisioning, dashboards, integrations
+Visitor Terminal | Custom web application | Gate touchscreen for visitor check-in
+Security Dashboard | Real-time web interface | Gate officer view of all active visitors
+
+Component | Users | Function
+Resident Mobile App | Residents | Create tickets, call security/neighbours, manage recurring visitors, receive delivery notifications
+Visitor Terminal | Visitors at gate | Enter PIN, view instructions, call resident if needed
+Security Dashboard | Gate security officers | View active tickets, verify visitors, admit/deny, call residents, review audit log
+Administration Portal | Body corporate / estate management | Manage residents, configure access rules, view analytics, export audit reports
+AnfieldVoice Server | IT / managed service | SIP registration, call routing, ticket database, API, push notifications
+
+Layer | Protocol | Details
+SIP Signalling | TLS 1.3 | All SIP registration and call signalling encrypted in transit
+Media Streams | SRTP (AES-256) | Voice and video media encrypted end-to-end
+API Communication | HTTPS (TLS 1.3) | All REST and WebSocket traffic encrypted
+Push Notifications | APNs / FCM (encrypted) | Apple and Google push notification channels
+Database Connections | TLS + certificate pinning | All database queries over encrypted connections
+
+Field | Type | Description
+Full Name | Required | Visitor's full name as it should appear on tickets
+Mobile Number | Optional | For automated PIN delivery (future feature)
+Category | Required | Scholar Transport, Staff Transport, Domestic Worker, Gardener, Caregiver, Contractor, Other
+Vehicle Make | Optional | e.g., Toyota, Volkswagen, Ford
+Vehicle Model | Optional | e.g., Quantum, Polo, Ranger
+Vehicle Colour | Optional | For visual verification at gate
+Registration Number | Optional | e.g., CA 123-456
+Typical Arrival Days | Optional | Monday–Friday, Weekends, or specific days
+Typical Arrival Times | Optional | Morning (6–9 AM), Afternoon, Evening, or specific time window
+Notes | Optional | Free-text field for any additional information
+
+Feature | Description
+Voice Calling | SIP-based HD voice calls between residents, security, and estate management. No cellular minutes used within the estate network.
+Video Calling | H.264/H.265 video calls between residents and the gate terminal. Optional camera integration at the gate.
+Resident Directory | Searchable directory of consenting residents by name or apartment number. Opt-in — residents control their visibility.
+Gate Intercom | Visitors without a PIN can call the resident directly from the Visitor Terminal. Caller ID displays "Estate Gate."
+Estate Broadcasts | Body corporate or estate management can send announcements to all residents or specific buildings.
+Emergency Calling | One-touch call to security with priority routing. Optionally configurable for armed response or medical emergency.
+Call History | Complete log of all calls with timestamps, accessible from the resident app.
+
+Column | Content
+Time | Scheduled or expected arrival window
+Resident | Resident name and apartment number
+Visitor | Visitor name and category label
+Vehicle | Vehicle details (if provided) — make, model, colour, registration
+Type | Standard or Recurring (with verified profile badge)
+Status | Pending, Arrived, Admitted, Denied, Expired
+PIN | Ticket PIN — validated on entry at the terminal
+Actions | Admit, Deny, Call Resident buttons
+
+Component | Technology | Rationale
+SIP Proxy | Kamailio 5.x | Industry-standard SIP proxy. Handles 10,000+ concurrent registrations.
+Media Server | FreeSWITCH 1.10+ | Handles voice/video transcoding, conferencing, IVR.
+Database | PostgreSQL 16+ | ACID-compliant, mature, excellent replication and backup.
+API Server | FastAPI / Node.js | REST + WebSocket for apps, dashboards, integrations.
+Mobile Apps | Linphone SDK | Open-source SIP client. Customisable UI. iOS, Android, desktop.
+Visitor Terminal | PWA | Works on any modern browser. Deploy on ruggedised hardware.
+Dashboards | React / Vue.js SPA | Real-time web interfaces. Lightweight, low-spec friendly.
+Push Notifications | APNs + FCM | Apple and Google push for background call delivery.
+
+Metric | Before AnfieldVoice | With AnfieldVoice | Improvement
+Gate processing (standard visitor) | 60–90 seconds | 20–30 seconds | ~60% reduction
+Gate processing (recurring visitor) | 60–90 seconds | 10–15 seconds | ~80% reduction
+Resident verification calls/day | 50–80 calls | 10–20 calls | ~70% reduction
+Security staff time on phone | 15–25 hrs/week | 3–5 hrs/week | ~75% reduction
+Morning peak queue length | 8–15 vehicles | 2–5 vehicles | ~60% reduction
+Missed/undocumented deliveries | 5–15 per month | < 1 per month | ~95% reduction
+Audit trail availability | Manual / none | Complete, searchable | New capability
+
+Capability | AnfieldVoice | ButterflyMX | 2N / Akuvox | Generic VoIP | Manual/Paper
+Visitor Ticketing | ✓ Full | ✓ Basic | ✗ | ✗ | ✗
+PIN-Based Access | ✓ | ✓ | ✗ | ✗ | ✗
+Recurring Visitor Profiles | ✓ Native | ✗ | ✗ | ✗ | ✗
+Delivery Management | ✓ Full | ✗ | ✗ | ✗ | ✗
+Resident Mobile App | ✓ Branded | ✓ | ✗ | ✗ | ✗
+Video Calling | ✓ | ✓ | ✓ | ✓ | ✗
+Security Dashboard | ✓ Purpose-built | ✓ Basic | ✗ | ✗ | ✗
+Complete Audit Trail | ✓ | ✓ Limited | ✗ | ✗ | ✗
+Administration Portal | ✓ Full | ✓ Limited | ✓ Basic | ✗ | ✗
+Resident Directory | ✓ | ✗ | ✗ | ✗ | ✗
+Estate Broadcasts | ✓ | ✗ | ✗ | ✗ | ✗
+Custom Branding | ✓ Full | ✗ | ✗ | ✗ | ✗
+Multi-Language (SA) | ✓ | ✗ | ✗ | ✗ | ✗
+On-Premises Option | ✓ | ✗ | ✓ | ✓ | N/A
+POPIA Compliance | ✓ Built-in | Partial | N/A | N/A | ✗
+SA-Based Support | ✓ Local | ✗ US-based | ✗ EU-based | Varies | N/A
+Open Standards | ✓ SIP/REST | Proprietary | Proprietary | ✓ SIP | N/A
+Scalability (500+) | ✓ Native | ✓ | ✓ | Partial | ✗
+
+Phase | Duration | Activities | Deliverables
+1. Discovery & Planning | 2 weeks | Site survey, network assessment, gate hardware evaluation, resident database collection, branding requirements | Technical assessment report, deployment plan, branding mockups
+2. Infrastructure Setup | 2–3 weeks | Server deployment, SIP trunk configuration, network integration, security hardening | Operational server environment, network connectivity verified
+3. Platform Configuration | 2 weeks | Branded app build, visitor terminal setup, dashboard configuration, resident data import | Branded apps ready, configured dashboards, imported resident data
+4. Security Staff Training | 1 week | Dashboard training, visitor processing workflows, exception handling, shift handover procedures | Trained security staff, training documentation, quick-reference guides
+5. Resident Onboarding | 2–3 weeks | Resident communication, app installation support, training sessions, FAQ distribution | >80% resident app installation, resident training materials
+6. Go-Live & Parallel Run | 1–2 weeks | Dual operation with existing system, monitoring, rapid response, policy adjustment | Go-live completion report, issue resolution log
+7. Post-Go-Live Optimisation | 2 weeks | Performance review, policy tuning, resident feedback collection, additional training | Optimisation report, resident satisfaction survey results
+
+Tier | Response Time | Hours | Channels | Coverage
+Critical — System down | < 1 hour | 24/7/365 | Phone + Email + Chat | Server, SIP, database
+High — Major feature unavailable | < 4 hours | Business hrs + Sat | Email + Ticketing | Dashboard, terminal, app
+Medium — Minor issue | < 1 business day | Business hours | Email + Ticketing | Non-critical features
+Low — Question / Enhancement | < 3 business days | Business hours | Email | General inquiries
+
+Feature | Description | Status
+Gate & Boom Integration | Automated boom gate triggering on successful PIN validation | In Development
+CCTV Integration | Camera snapshot captured on visitor arrival and attached to ticket | In Development
+QR Code Visitor Passes | Printable QR codes for events, functions, and long-term contractors | Planned
+SMS PIN Delivery | Automated SMS delivery of PINs to visitors from within the app | Planned
+Advanced Analytics | Predictive analytics for staffing, peak hour forecasting, anomaly detection | Planned
+
+Feature | Description
+Number Plate Recognition | Automatic vehicle identification on approach — linked to recurring visitor profiles
+Biometric Integration | Fingerprint or facial recognition option for recurring visitors (resident opt-in)
+Visitor Self-Service Kiosk | Fully self-service visitor check-in for pre-authorised visitors during off-peak hours
+Multi-Estate Management | Centralised management console for property groups with multiple estates
+Delivery Locker Integration | Integration with smart delivery lockers for contactless package handoff
+
+Component | Model | Rate (per unit/month) | Annual (360 units)
+AnfieldVoice Platform (Core) | Per-unit SaaS | R 45 – R 65 | R 194,400 – R 280,800
+Resident Mobile App (Branded) | Included in platform | — | —
+Security Dashboard | Included in platform | — | —
+Administration Portal | Included in platform | — | —
+Visitor Terminal License | Per terminal | R 250 – R 400 | R 3,000 – R 4,800
+
+Item | Indicative Cost | Notes
+Deployment & Configuration | R 35,000 – R 55,000 | Phases 1–3: discovery, infrastructure, platform config
+Custom App Branding | R 15,000 – R 25,000 | One-time: custom logo, colours, app store listing setup
+Staff Training | R 8,000 – R 15,000 | On-site security staff training (Phase 4)
+Resident Onboarding Programme | R 12,000 – R 20,000 | Materials, launch event, support during Phase 5
+Hardware — Visitor Terminal | R 8,000 – R 18,000 | Per terminal. Weatherproof touchscreen + mounting.
+Hardware — Security Dashboard PC | R 6,000 – R 12,000 | Per station. Standard office PC or all-in-one.
+
+Service | Model | Indicative Rate
+Support & Maintenance (Standard) | Per-unit/month | R 12 – R 18
+Support & Maintenance (Premium) | Per-unit/month | R 22 – R 30
+Cloud Hosting (if applicable) | Per-unit/month | R 15 – R 25
+On-Premises Server Maintenance | Monthly retainer | R 3,500 – R 6,000
+
+Category | Annual Cost (Range)
+Platform Licensing | R 194,400 – R 280,800
+Support & Maintenance (Standard) | R 51,840 – R 77,760
+Cloud Hosting | R 64,800 – R 108,000
+Visitor Terminal License (1 gate) | R 3,000 – R 4,800
+Total Annual Recurring | R 314,040 – R 471,360
+ | 
+One-Time Setup (incl. hardware) | R 84,000 – R 145,000
+ | 
+Year 1 Total (all-in) | R 398,040 – R 616,360

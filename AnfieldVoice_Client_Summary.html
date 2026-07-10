@@ -4,321 +4,1066 @@
 <meta charset="UTF-8">
 <title>AnfieldVoice — Client Summary</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-  @page { size: A4; margin: 2cm; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  @page {
+    size: A4;
+    margin: 0;
+    @bottom-center {
+      content: "Page " counter(page);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 7.5pt;
+      color: #94a3b8;
+    }
+  }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
     font-family: 'Inter', -apple-system, sans-serif;
-    font-size: 11pt; color: #1a1a2e; line-height: 1.5;
+    font-size: 10.5pt;
+    color: #1e293b;
+    line-height: 1.6;
   }
 
-  /* Cover */
-  .cover { text-align: center; padding-top: 80px; page-break-after: always; }
-  .cover .ribbon {
-    display: inline-block; background: #1a3c6e; color: #fff;
-    padding: 6px 20px; border-radius: 4px; font-size: 10pt; font-weight: 600;
-    letter-spacing: 2px; margin-bottom: 40px;
+  /* ===== COVER ===== */
+  .cover {
+    page-break-after: always;
+    position: relative;
+    background: linear-gradient(160deg, #081020 0%, #0c1929 30%, #102a4a 60%, #1a3c6e 100%);
+    min-height: 841.89pt;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60pt 80pt;
+    overflow: hidden;
   }
-  .cover h1 { font-size: 42pt; font-weight: 800; color: #1a3c6e; margin-bottom: 6px; }
-  .cover .tagline { font-size: 16pt; color: #0d948b; font-weight: 600; margin-bottom: 30px; }
-  .cover .divider { width: 50px; height: 3px; background: #0d948b; margin: 0 auto 30px; border-radius: 2px; }
-  .cover .meta { font-size: 10pt; color: #6b7280; }
-  .cover .meta strong { color: #1a1a2e; }
 
-  /* Sections */
-  h2 { font-size: 18pt; font-weight: 700; color: #1a3c6e; margin: 24px 0 12px; border-bottom: 2px solid #0d948b; padding-bottom: 4px; }
-  h3 { font-size: 13pt; font-weight: 700; color: #1a3c6e; margin: 16px 0 8px; }
+  /* Geometric grid pattern */
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 
-  p { margin-bottom: 8px; }
+  /* Large teal glow top-right */
+  .cover::after {
+    content: '';
+    position: absolute;
+    top: -180px;
+    right: -180px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .cover .glow-b {
+    position: absolute;
+    bottom: -120px;
+    left: -120px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(20,184,166,0.06) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .cover-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cover .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #8ab4d8;
+    padding: 7px 22px;
+    border-radius: 100px;
+    font-size: 7.5pt;
+    font-weight: 500;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+
+  .cover h1 {
+    font-size: 58pt;
+    font-weight: 900;
+    letter-spacing: -2.5px;
+    color: #ffffff;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .cover h1 .accent { color: #14b8a6; }
+
+  .cover .tagline {
+    font-size: 15pt;
+    font-weight: 300;
+    color: #8ab4d8;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    max-width: 500px;
+  }
+
+  .cover .rule {
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #14b8a6, #0d948b);
+    margin: 28px auto;
+    border-radius: 2px;
+  }
+
+  .cover .subtitle {
+    font-size: 11pt;
+    color: #6a9ec8;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    margin-bottom: 50px;
+  }
+
+  .cover .meta {
+    font-size: 9pt;
+    color: #4a7ca8;
+    line-height: 2;
+  }
+  .cover .meta strong { color: #b0cce8; font-weight: 600; }
+
+  .cover .org {
+    margin-top: 55px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .cover .org p {
+    font-size: 7.5pt;
+    color: #3a6a90;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== PAGE CONTENT ===== */
+  .page {
+    padding: 42pt 50pt;
+  }
+
+  .sect {
+    margin-bottom: 28px;
+  }
+
+  .sect-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .sect-head .accent-bar {
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(180deg, #14b8a6, #0d948b);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .sect-head .sect-num {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-size: 19pt;
+    font-weight: 800;
+    color: #0f1d35;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin: 0;
+  }
+  h2 .hl { color: #0d948b; }
+
+  .lead {
+    font-size: 10pt;
+    color: #475569;
+    line-height: 1.65;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 16px 0 6px;
+  }
+
+  /* ===== STATS ===== */
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin: 18px 0 22px;
+  }
+  .stat {
+    flex: 1;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px 10px 14px;
+    text-align: center;
+    border: 1px solid #e9edf2;
+  }
+  .stat .num {
+    font-size: 22pt;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .stat .num .hl { color: #0d948b; }
+  .stat .label {
+    font-size: 7.5pt;
+    color: #64748b;
+    font-weight: 500;
+    line-height: 1.3;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== FEATURE GRID ===== */
+  .feat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0 16px;
+  }
+  .feat {
+    flex: 1 1 30%;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 12px 12px 10px;
+    border: 1px solid #e9edf2;
+  }
+  .feat svg {
+    display: block;
+    margin-bottom: 8px;
+  }
+  .feat strong {
+    display: block;
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+  .feat span {
+    font-size: 8pt;
+    color: #64748b;
+    line-height: 1.4;
+    display: block;
+  }
+
+  /* ===== COMPARE ===== */
+  .compare-row {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0;
+  }
+  .compare-box {
+    flex: 1;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .compare-box.before {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .compare-box.after {
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+  }
+  .compare-box h4 {
+    font-size: 9pt;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .compare-box.before h4 { color: #dc2626; }
+  .compare-box.after h4 { color: #0d948b; }
+  .compare-box ul { margin: 0; }
+  .compare-box ul li { padding: 2px 0 2px 16px; font-size: 9pt; color: #475569; }
+  .compare-box ul li::before { top: 10px; width: 5px; height: 5px; }
+
+  /* ===== SECURITY ===== */
+  .sec-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 18px;
+  }
+  .sec-layer {
+    flex: 1 1 48%;
+    border-radius: 6px;
+    padding: 12px 14px;
+    border: 1px solid #e9edf2;
+  }
+  .sec-layer h4 {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sec-layer h4 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 8pt;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .sec-layer p {
+    font-size: 8pt;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.45;
+    padding-left: 28px;
+  }
+
+  .sec-layer:nth-child(1) .num { background: #0d948b; }
+  .sec-layer:nth-child(2) .num { background: #0891b2; }
+  .sec-layer:nth-child(3) .num { background: #2563eb; }
+  .sec-layer:nth-child(4) .num { background: #7c3aed; }
+  .sec-layer:nth-child(5) .num { background: #db2777; }
+  .sec-layer:nth-child(6) .num { background: #dc2626; }
+
+  /* ===== DP GRID ===== */
+  .dp-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .dp-item {
+    flex: 1 1 47%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9pt;
+    color: #334155;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e9edf2;
+  }
+
+  /* ===== TABLE ===== */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 12px 0;
+    font-size: 8.5pt;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+  th {
+    background: #0f1d35;
+    color: #fff;
+    padding: 7px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 8pt;
+    letter-spacing: 0.3px;
+  }
+  th:first-child { text-align: left; padding-left: 12px; }
+  td {
+    padding: 6px 8px;
+    text-align: center;
+    border-bottom: 1px solid #e9edf2;
+    font-size: 8.5pt;
+  }
+  td:first-child {
+    text-align: left;
+    font-weight: 600;
+    padding-left: 12px;
+    color: #1e293b;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fafbfc; }
+  .chk { color: #0d948b; font-weight: 700; font-size: 10pt; }
+  .x { color: #dc2626; font-size: 9pt; }
+  .lim {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== SCENARIOS ===== */
+  .scenario {
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin: 6px 0;
+    border: 1px solid #e9edf2;
+    border-left: 3px solid #0d948b;
+  }
+  .scenario:nth-child(3) { border-left-color: #2563eb; }
+  .scenario:nth-child(4) { border-left-color: #7c3aed; }
+  .scenario:nth-child(5) { border-left-color: #db2777; }
+  .scenario h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+  .scenario p {
+    font-size: 8.5pt;
+    color: #475569;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .scenario .tag {
+    display: inline-block;
+    background: #0d948b;
+    color: #fff;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-top: 3px;
+  }
+
+  /* ===== PLATFORM ===== */
+  .plat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .plat {
+    flex: 1 1 46%;
+    border-radius: 6px;
+    padding: 12px 14px;
+    border: 1px solid #e9edf2;
+  }
+  .plat h4 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #0f1d35;
+    margin-bottom: 5px;
+  }
+  .plat ul { margin: 0; }
+  .plat ul li { padding: 2px 0 2px 16px; font-size: 8.5pt; }
+
+  /* ===== DELIVERABLES ===== */
+  .deliver-row {
+    display: flex;
+    gap: 14px;
+    margin: 12px 0;
+  }
+  .deliver {
+    flex: 1;
+    border-radius: 6px;
+    padding: 14px 16px;
+    border: 1px solid #e9edf2;
+  }
+  .deliver h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+  .deliver ul { margin: 0; }
+  .deliver ul li { padding: 2px 0 2px 16px; font-size: 8.5pt; }
+
+  /* ===== BENEFITS ===== */
+  .ben-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+  }
+  .ben {
+    flex: 1 1 47%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e9edf2;
+    font-size: 8.5pt;
+    color: #334155;
+    line-height: 1.35;
+  }
+  .ben .dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0d948b;
+  }
+
+  /* ===== Q&A ===== */
+  .qa-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .qa-item {
+    flex: 1 1 47%;
+    border-radius: 6px;
+    padding: 10px 14px;
+    border: 1px solid #e9edf2;
+  }
+  .qa-item .q {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .qa-item .q .marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #0d948b;
+    color: #fff;
+    font-size: 7pt;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .qa-item .a {
+    font-size: 8pt;
+    color: #64748b;
+    line-height: 1.45;
+    padding-left: 22px;
+  }
+
+  /* ===== ABOUT ===== */
+  .about-tbl {
+    width: 100%;
+    max-width: 400px;
+    border: none;
+    margin: 10px 0;
+  }
+  .about-tbl td {
+    border: none;
+    border-bottom: 1px solid #e9edf2;
+    padding: 6px 4px;
+    text-align: left;
+    background: transparent !important;
+    font-size: 9pt;
+  }
+  .about-tbl td:first-child {
+    font-weight: 600;
+    color: #64748b;
+    width: 110px;
+    padding-left: 0;
+  }
+  .about-tbl td:last-child { color: #1e293b; }
+  .about-tbl tr:last-child td { border-bottom: none; }
+
+  /* ===== CONTACT ===== */
+  .contact {
+    background: linear-gradient(160deg, #0f1d35 0%, #1a3c6e 100%);
+    border-radius: 8px;
+    padding: 24px 28px;
+    text-align: center;
+    margin: 20px 0 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -5%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(20,184,166,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .contact .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.08);
+    color: #8ab4d8;
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 100px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .contact h3 {
+    color: #fff;
+    font-size: 12pt;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    margin: 0 0 2px;
+  }
+  .contact .role {
+    color: #7ba4d0;
+    font-size: 8.5pt;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .contact .phone {
+    font-size: 20pt;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.3px;
+    position: relative;
+    z-index: 1;
+  }
+  .contact .fine {
+    font-size: 7.5pt;
+    opacity: 0.4;
+    color: #8ab4d8;
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .foot {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 7.5pt;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
   ul { list-style: none; padding: 0; margin: 6px 0 12px; }
-  ul li { padding: 4px 0 4px 18px; position: relative; font-size: 10.5pt; }
-  ul li::before { content: "•"; position: absolute; left: 4px; color: #0d948b; font-weight: 700; }
-
-  /* Stats grid */
-  .stats { display: flex; gap: 12px; margin: 16px 0; }
-  .stat { flex: 1; background: #f0f4f8; border-radius: 8px; padding: 14px; text-align: center; }
-  .stat .num { font-size: 22pt; font-weight: 800; color: #0d948b; }
-  .stat .label { font-size: 9pt; color: #6b7280; margin-top: 2px; }
-
-  /* Two-column */
-  .two-col { display: flex; gap: 20px; margin: 12px 0; }
-  .col { flex: 1; }
-
-  /* Permission table */
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 9.5pt; }
-  th { background: #1a3c6e; color: #fff; padding: 6px 10px; text-align: center; font-weight: 600; }
-  th:first-child { text-align: left; }
-  td { padding: 5px 10px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-  td:first-child { text-align: left; font-weight: 500; }
-  tr:nth-child(even) td { background: #f8fafc; }
-  .check { color: #0d948b; font-weight: 700; }
-  .cross { color: #dc2626; }
-  .lim { color: #d97706; font-size: 8.5pt; font-weight: 600; }
-
-  .feature-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
-  .feat { flex: 1 1 30%; background: #f8fafc; border-radius: 6px; padding: 10px 12px; border-left: 3px solid #0d948b; }
-  .feat strong { display: block; font-size: 10pt; margin-bottom: 2px; }
-  .feat span { font-size: 9pt; color: #6b7280; }
-
-  .security-layer { margin: 4px 0; padding: 8px 14px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #0d948b; }
-  .security-layer h4 { font-size: 10.5pt; margin-bottom: 2px; }
-  .security-layer p { font-size: 9.5pt; color: #6b7280; margin: 0; }
-  .security-layer:nth-child(2) { border-left-color: #0891b2; }
-  .security-layer:nth-child(3) { border-left-color: #2563eb; }
-  .security-layer:nth-child(4) { border-left-color: #7c3aed; }
-  .security-layer:nth-child(5) { border-left-color: #db2777; }
-  .security-layer:nth-child(6) { border-left-color: #dc2626; }
-
-  .contact { background: #1a3c6e; color: #fff; border-radius: 10px; padding: 24px; text-align: center; margin-top: 20px; }
-  .contact h3 { color: #fff; font-size: 14pt; margin-bottom: 4px; }
-  .contact .phone { font-size: 20pt; font-weight: 700; margin: 6px 0; }
-
-  .page-break { page-break-before: always; }
+  ul li {
+    padding: 3px 0 3px 16px;
+    position: relative;
+    font-size: 9pt;
+    color: #334155;
+    line-height: 1.4;
+  }
+  ul li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 10px;
+    width: 5px;
+    height: 5px;
+    background: #0d948b;
+    border-radius: 50%;
+    opacity: 0.5;
+  }
 </style>
 </head>
 <body>
 
-<!-- COVER -->
+<!-- ===== COVER ===== -->
 <div class="cover">
-  <div class="ribbon">RED CAPE TECHNOLOGIES (PTY) LTD</div>
-  <h1>AnfieldVoice</h1>
-  <p class="tagline">Intelligent Visitor &amp; Communication Management for Residential Estates</p>
-  <div class="divider"></div>
-  <p style="font-size:13pt; color:#1a3c6e; font-weight:600; margin-bottom:30px;">Secure &bull; Efficient &bull; Built for Estates</p>
-  <p class="meta"><strong>Prepared for:</strong> Body Corporate &amp; Estate Management</p>
-  <p class="meta"><strong>Date:</strong> July 2026 &nbsp;|&nbsp; <strong>Confidential</strong></p>
-  <p class="meta" style="margin-top:20px;"><strong>Red Cape Technologies (Pty) Ltd</strong><br>Reg: 2022/762895/07</p>
-</div>
-
-<!-- PAGE 1: THE PROBLEM + BENEFITS -->
-<h2>The Problem</h2>
-<p>Every day, the same domestic workers, school transport, deliveries, and visitors queue at the gate. Security treats every arrival as if they've never been before. Residents get calls about people they approved yesterday. No one has a complete record of who entered or when.</p>
-
-<div class="stats">
-  <div class="stat"><div class="num">15-25h</div><div class="label">Security phone time per week</div></div>
-  <div class="stat"><div class="num">60-70%</div><div class="label">Security on the phone, not the gate</div></div>
-  <div class="stat"><div class="num">50-80</div><div class="label">Verification calls to residents daily</div></div>
-  <div class="stat"><div class="num">8-15</div><div class="label">Vehicles queued at morning peak</div></div>
-</div>
-
-<h2>The Solution — AnfieldVoice</h2>
-<p>AnfieldVoice replaces the intercom, visitor logbook, delivery register, and resident phone directory with a single platform. Every arrival, every call, every access decision is recorded and searchable.</p>
-
-<h3>What you get</h3>
-<div class="feature-grid">
-  <div class="feat"><strong>&#128274; PIN-Based Visitor Ticketing</strong><span>Residents generate one-time or recurring PINs for every visitor. No PIN, no entry.</span></div>
-  <div class="feat"><strong>&#9733; Recurring Visitor Profiles</strong><span>Save domestic workers, school transport, gardeners. Daily authorisation in 5 seconds.</span></div>
-  <div class="feat"><strong>&#128230; Delivery Management</strong><span>Pre-approve, redirect, or deny deliveries. No more "we have a package" calls.</span></div>
-  <div class="feat"><strong>&#128200; Security Dashboard</strong><span>Real-time view of all active tickets. Admit with one click. Complete audit trail.</span></div>
-  <div class="feat"><strong>&#128241; Resident App</strong><span>Create tickets, call security, manage visitors, receive delivery alerts. iOS + Android.</span></div>
-  <div class="feat"><strong>&#128736; Administration Portal</strong><span>Resident management, visitor policies, analytics, audit export, estate announcements.</span></div>
-</div>
-
-<h3>What changes</h3>
-<div class="two-col">
-  <div class="col">
-    <p><strong>Before:</strong></p>
-    <ul>
-      <li>Every visitor processed from scratch</li>
-      <li>Handwritten gate logs or nothing</li>
-      <li>Residents interrupted all day</li>
-      <li>Deliveries = phone calls</li>
-    </ul>
-  </div>
-  <div class="col">
-    <p><strong>After AnfieldVoice:</strong></p>
-    <ul>
-      <li>Recurring visitors: 10-15 seconds at gate</li>
-      <li>Complete searchable audit trail</li>
-      <li>70% fewer resident verification calls</li>
-      <li>Every delivery logged and tracked</li>
-    </ul>
+  <div class="glow-b"></div>
+  <div class="cover-inner">
+    <div class="badge">Red Cape Technologies (Pty) Ltd</div>
+    <h1>Anfield<span class="accent">Voice</span></h1>
+    <p class="tagline">Intelligent Visitor &amp; Communication<br>Management for Residential Estates</p>
+    <div class="rule"></div>
+    <p class="subtitle">Secure &bull; Efficient &bull; Built for Estates</p>
+    <p class="meta"><strong>Prepared for</strong> &nbsp; Body Corporate &amp; Estate Management</p>
+    <p class="meta"><strong>Date</strong> &nbsp; July 2026 &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Confidential</strong></p>
+    <div class="org">
+      <p>Red Cape Technologies (Pty) Ltd &nbsp;|&nbsp; Reg 2022/762895/07</p>
+    </div>
   </div>
 </div>
 
-<!-- PAGE 2: SECURITY -->
-<div class="page-break"></div>
-<h2>Security — Six Layers of Verification</h2>
-<p>No single point of failure. Every layer must be satisfied before anyone enters the estate.</p>
-
-<div class="security-layer">
-  <h4>1 &nbsp; Resident Authorisation</h4>
-  <p>Every visit begins with an explicit resident action. No PIN, no entry. No exceptions.</p>
-</div>
-<div class="security-layer">
-  <h4>2 &nbsp; Time-Bound PIN</h4>
-  <p>Each PIN is valid for today only. Expired PINs are rejected automatically. Yesterday's PIN won't work today.</p>
-</div>
-<div class="security-layer">
-  <h4>3 &nbsp; Ticket Retrieval</h4>
-  <p>A PIN retrieves exactly one ticket, for one visitor, on one day. Revoked tickets are immediately denied.</p>
-</div>
-<div class="security-layer">
-  <h4>4 &nbsp; Officer Verification</h4>
-  <p>The security officer sees the full ticket and visually confirms the visitor matches. Every admission is attributed.</p>
-</div>
-<div class="security-layer">
-  <h4>5 &nbsp; Exception Handling</h4>
-  <p>If anything doesn't match, the officer calls the resident directly from the dashboard. No admission without resolution.</p>
-</div>
-<div class="security-layer">
-  <h4>6 &nbsp; Complete Audit Trail</h4>
-  <p>Every decision is logged immutably — who created the ticket, when it was used, who admitted the visitor, and any exceptions.</p>
-</div>
-
-<h3>Data Protection</h3>
-<ul>
-  <li>All data encrypted in transit and at rest</li>
-  <li>PINs are one-way hashed — never stored in plaintext</li>
-  <li>POPIA-compliant with configurable retention policies</li>
-  <li>All administrative access is logged and auditable</li>
-</ul>
-
-<!-- PAGE 3: PERMISSIONS + VISITOR FLOWS -->
-<div class="page-break"></div>
-<h2>Access Control — Who Can Do What</h2>
-<p>Roles are additive. A person can be a resident AND a property admin. But a non-resident property admin never receives resident-only privileges like gate calls or visitor PINs.</p>
-
-<table>
-  <tr>
-    <th style="width:30%;">Function</th>
-    <th>Resident</th>
-    <th>Property Admin<br><span style="font-weight:400;font-size:8pt;">(Lives Here)</span></th>
-    <th>Property Admin<br><span style="font-weight:400;font-size:8pt;">(Remote)</span></th>
-    <th>Body Corp</th>
-  </tr>
-  <tr><td>Receive gate calls</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
-  <tr><td>Generate visitor PINs</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
-  <tr><td>Add / remove tenants</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-  <tr><td>Activate / suspend residents</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-  <tr><td>View apartment activity</td><td class="lim">Limited</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-  <tr><td>Estate administration</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
-</table>
-
-<h2>How It Works — Three Visitor Scenarios</h2>
-
-<h3>1. Standard Visitor</h3>
-<p>Resident creates ticket &rarr; System generates one-day PIN &rarr; Visitor enters PIN at gate &rarr; Security verifies and admits &rarr; All logged. Total time: ~20-30 seconds.</p>
-
-<h3>2. Recurring Visitor (Daily — Domestic Worker, School Transport)</h3>
-<p>Resident taps saved profile &rarr; "Generate Today's PIN" (5 seconds) &rarr; Visitor enters PIN &rarr; Dashboard shows "Verified Profile" badge &rarr; Quick admit. Total time: ~10-15 seconds. No phone call needed.</p>
-
-<h3>3. Unexpected Visitor</h3>
-<p>Visitor has no PIN &rarr; Terminal calls resident via app &rarr; Resident answers and issues PIN &rarr; Standard admission. If resident doesn't answer, visitor is not admitted. Event is logged.</p>
-
-<h3>4. Delivery Management</h3>
-<p>Driver arrives &rarr; Resident pre-approval shown on dashboard (Accept / Hold at Gate / Redirect) &rarr; Delivery logged with driver details, time, and resolution. No phone calls.</p>
-
-<!-- PAGE 4: PLATFORM + CONTACT -->
-<div class="page-break"></div>
-<h2>Platform Components</h2>
-
-<div class="two-col">
-  <div class="col">
-    <h3>Resident Mobile App</h3>
-    <ul>
-      <li>Create visitor tickets and generate PINs</li>
-      <li>Manage recurring visitor profiles</li>
-      <li>Receive delivery notifications</li>
-      <li>One-touch call to security</li>
-      <li>Resident directory (opt-in)</li>
-    </ul>
-
-    <h3>Security Dashboard</h3>
-    <ul>
-      <li>Real-time ticket queue with status indicators</li>
-      <li>One-click admit/deny controls</li>
-      <li>Recurring visitor badges for quick ID</li>
-      <li>One-click resident calling from any ticket</li>
-      <li>Searchable audit log</li>
-      <li>Multi-language (English, Afrikaans, Zulu)</li>
-    </ul>
+<!-- ===== 01 — PROBLEM ===== -->
+<div class="page">
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">01</span>
+    <h2>The <span class="hl">Problem</span></h2>
   </div>
-  <div class="col">
-    <h3>Visitor Terminal</h3>
-    <ul>
-      <li>Weatherproof touchscreen at the gate</li>
-      <li>PIN entry and resident search</li>
-      <li>Direct call to resident</li>
-      <li>Customisable with estate rules</li>
-    </ul>
+  <p class="lead">Every day, the same domestic workers, school transport, deliveries, and visitors queue at the gate. Security treats every arrival as if they've never been before. Residents get calls about people they approved yesterday. No one has a complete record of who entered or when.</p>
 
-    <h3>Administration Portal</h3>
-    <ul>
-      <li>Resident account management</li>
-      <li>Visitor policy configuration</li>
-      <li>Analytics and reporting</li>
-      <li>Audit export (PDF/CSV)</li>
-      <li>Estate-wide announcements</li>
-    </ul>
+  <div class="stats">
+    <div class="stat"><div class="num"><span class="hl">15</span>–<span class="hl">25</span>h</div><div class="label">Security phone time per week</div></div>
+    <div class="stat"><div class="num"><span class="hl">60</span>–<span class="hl">70</span>%</div><div class="label">Security on the phone, not the gate</div></div>
+    <div class="stat"><div class="num"><span class="hl">50</span>–<span class="hl">80</span></div><div class="label">Verification calls to residents daily</div></div>
+    <div class="stat"><div class="num"><span class="hl">8</span>–<span class="hl">15</span></div><div class="label">Vehicles queued at morning peak</div></div>
   </div>
 </div>
 
-<h2>What You Get</h2>
-<p>After deposit is paid, your system is installed and operational within <strong>2-3 weeks</strong>:</p>
-
-<div class="two-col">
-  <div class="col">
-    <h3>Hardware Included</h3>
-    <ul>
-      <li><strong>1x Server</strong> — on-site, pre-configured, ready to run</li>
-      <li><strong>3x Tablets</strong> — for security dashboards at the gate</li>
-      <li><strong>2x Number Pads</strong> — weatherproof, outdoor rated</li>
-    </ul>
+<!-- ===== 02 — SOLUTION ===== -->
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">02</span>
+    <h2>The Solution — <span class="hl">AnfieldVoice</span></h2>
   </div>
-  <div class="col">
-    <h3>Services Included</h3>
-    <ul>
-      <li><strong>Full installation</strong> — on-site setup and configuration</li>
-      <li><strong>Security staff training</strong> — hands-on dashboard training</li>
-      <li><strong>Resident onboarding</strong> — app setup support and materials</li>
-      <li><strong>Go-live support</strong> — on-site during first week of operation</li>
-    </ul>
+  <p class="lead">AnfieldVoice replaces the intercom, visitor logbook, delivery register, and resident phone directory with a single platform. Every arrival, every call, every access decision is recorded and searchable.</p>
+
+  <h3>What you get</h3>
+  <div class="feat-grid">
+    <div class="feat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#0d948b"/></svg>
+      <strong>PIN-Based Visitor Ticketing</strong>
+      <span>Residents generate one-time or recurring PINs for every visitor. No PIN, no entry.</span>
+    </div>
+    <div class="feat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="#0d948b"/></svg>
+      <strong>Recurring Visitor Profiles</strong>
+      <span>Save domestic workers, school transport, gardeners. Daily authorisation in 5 seconds.</span>
+    </div>
+    <div class="feat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 10H6v-2h12v2z" fill="#0d948b"/></svg>
+      <strong>Delivery Management</strong>
+      <span>Pre-approve, redirect, or deny deliveries. No more "we have a package" calls.</span>
+    </div>
+    <div class="feat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="#0d948b"/></svg>
+      <strong>Security Dashboard</strong>
+      <span>Real-time view of all active tickets. Admit with one click. Complete audit trail.</span>
+    </div>
+    <div class="feat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" fill="#0d948b"/></svg>
+      <strong>Resident App</strong>
+      <span>Create tickets, call security, manage visitors, receive delivery alerts. iOS + Android.</span>
+    </div>
+    <div class="feat">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="#0d948b"/></svg>
+      <strong>Administration Portal</strong>
+      <span>Resident management, visitor policies, analytics, audit export, estate announcements.</span>
+    </div>
   </div>
 </div>
 
-<h2>Key Benefits</h2>
-<div class="two-col">
-  <div class="col">
-    <ul>
-      <li>Gate processing time reduced by 60-80% for recurring visitors</li>
-      <li>Resident verification calls reduced by ~70%</li>
-      <li>Complete audit trail of every access event</li>
-      <li>Morning peak queue reduced by ~60%</li>
-    </ul>
+<!-- ===== 03 — BEFORE/AFTER ===== -->
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">03</span>
+    <h2>What <span class="hl">Changes</span></h2>
   </div>
-  <div class="col">
-    <ul>
-      <li>Security officers focus on security, not phone duty</li>
-      <li>POPIA-compliant resident data handling</li>
-      <li>Custom-branded app for your estate</li>
-      <li>SA-based support and local understanding</li>
-    </ul>
+  <div class="compare-row">
+    <div class="compare-box before">
+      <h4>Before</h4>
+      <ul>
+        <li>Every visitor processed from scratch</li>
+        <li>Handwritten gate logs or nothing</li>
+        <li>Residents interrupted all day</li>
+        <li>Deliveries = phone calls</li>
+      </ul>
+    </div>
+    <div class="compare-box after">
+      <h4>After AnfieldVoice</h4>
+      <ul>
+        <li>Recurring visitors: 10–15 seconds at gate</li>
+        <li>Complete searchable audit trail</li>
+        <li>70% fewer resident verification calls</li>
+        <li>Every delivery logged and tracked</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== 04 — SECURITY ===== -->
+<div class="page" style="page-break-before: always;">
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">04</span>
+    <h2>Security — Six Layers of <span class="hl">Verification</span></h2>
+  </div>
+  <p class="lead">No single point of failure. Every layer must be satisfied before anyone enters the estate.</p>
+
+  <div class="sec-grid">
+    <div class="sec-layer"><h4><span class="num">1</span> Resident Authorisation</h4><p>Every visit begins with an explicit resident action. No PIN, no entry. No exceptions.</p></div>
+    <div class="sec-layer"><h4><span class="num">2</span> Time-Bound PIN</h4><p>Each PIN is valid for today only. Expired PINs are rejected automatically. Yesterday's PIN won't work today.</p></div>
+    <div class="sec-layer"><h4><span class="num">3</span> Ticket Retrieval</h4><p>A PIN retrieves exactly one ticket, for one visitor, on one day. Revoked tickets are immediately denied.</p></div>
+    <div class="sec-layer"><h4><span class="num">4</span> Officer Verification</h4><p>Security sees the full ticket and visually confirms identity. Every admission is attributed.</p></div>
+    <div class="sec-layer"><h4><span class="num">5</span> Exception Handling</h4><p>If anything doesn't match, officer calls resident from the dashboard. No admission without resolution.</p></div>
+    <div class="sec-layer"><h4><span class="num">6</span> Complete Audit Trail</h4><p>Every decision logged immutably — who created the ticket, when used, who admitted, and any exceptions.</p></div>
   </div>
 </div>
 
-<h2>About Red Cape Technologies</h2>
-<p>Red Cape Technologies builds practical security and communication systems designed from the ground up for South African residential estates. No generic products adapted for estates — everything we build is purpose-built for estate living.</p>
-
-<table style="max-width:400px;">
-  <tr><td style="font-weight:600;">Company</td><td>Red Cape Technologies (Pty) Ltd</td></tr>
-  <tr><td style="font-weight:600;">Registration</td><td>2022 / 762895 / 07</td></tr>
-  <tr><td style="font-weight:600;">Registered</td><td>10 October 2022</td></tr>
-  <tr><td style="font-weight:600;">Status</td><td style="color:#0d948b; font-weight:600;">In Business</td></tr>
-</table>
-
-<div class="contact">
-  <h3>Contact</h3>
-  <p class="phone">Russell Miller — Director</p>
-  <p style="font-size:12pt; margin:4px 0;">083 700 0441</p>
-  <p style="font-size:9pt; opacity:0.7;">Red Cape Technologies (Pty) Ltd &bull; Reg: 2022/762895/07</p>
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">05</span>
+    <h2>Data <span class="hl">Protection</span></h2>
+  </div>
+  <div class="dp-grid">
+    <div class="dp-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" fill="#0d948b"/></svg> All data encrypted in transit and at rest</div>
+    <div class="dp-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#0d948b"/></svg> PINs are one-way hashed — never stored in plaintext</div>
+    <div class="dp-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" fill="#0d948b"/></svg> POPIA-compliant with configurable retention policies</div>
+    <div class="dp-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#0d948b"/></svg> All administrative access is logged and auditable</div>
+  </div>
+</div>
 </div>
 
-<p style="text-align:center; margin-top:20px; font-size:9pt; color:#94a3b8;">
-  AnfieldVoice is a product of Red Cape Technologies (Pty) Ltd<br>
-  Confidential &bull; July 2026
-</p>
+<!-- ===== 06 — ACCESS CONTROL ===== -->
+<div class="page" style="page-break-before: always;">
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">06</span>
+    <h2>Access Control — <span class="hl">Who Can Do What</span></h2>
+  </div>
+  <p class="lead">Roles are additive. A person can be a resident AND a property admin. But a non-resident property admin never receives resident-only privileges like gate calls or visitor PINs.</p>
+
+  <table>
+    <tr>
+      <th style="width:28%;">Function</th>
+      <th>Resident</th>
+      <th>Property Admin<br><span style="font-weight:400;font-size:7pt;opacity:0.6;">(Lives Here)</span></th>
+      <th>Property Admin<br><span style="font-weight:400;font-size:7pt;opacity:0.6;">(Remote)</span></th>
+      <th>Body Corp</th>
+    </tr>
+    <tr><td>Receive gate calls</td><td class="chk">✓</td><td class="chk">✓</td><td class="x">✗</td><td class="chk">✓</td></tr>
+    <tr><td>Generate visitor PINs</td><td class="chk">✓</td><td class="chk">✓</td><td class="x">✗</td><td class="chk">✓</td></tr>
+    <tr><td>Add / remove tenants</td><td class="x">✗</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td></tr>
+    <tr><td>Activate / suspend residents</td><td class="x">✗</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td></tr>
+    <tr><td>View apartment activity</td><td><span class="lim">LIMITED</span></td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td></tr>
+    <tr><td>Estate administration</td><td class="x">✗</td><td class="x">✗</td><td class="x">✗</td><td class="chk">✓</td></tr>
+  </table>
+</div>
+
+<!-- ===== 07 — VISITOR SCENARIOS ===== -->
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">07</span>
+    <h2>How It Works — <span class="hl">Visitor Scenarios</span></h2>
+  </div>
+
+  <div class="scenario">
+    <h4>1. Standard Visitor</h4>
+    <p>Resident creates ticket → System generates one-day PIN → Visitor enters PIN at gate → Security verifies and admits → All logged. <span class="tag">~20–30 sec</span></p>
+  </div>
+  <div class="scenario">
+    <h4>2. Recurring Visitor (Domestic Worker, School Transport)</h4>
+    <p>Resident taps saved profile → "Generate Today's PIN" (5 sec) → Visitor enters PIN → Dashboard shows "Verified Profile" badge → Quick admit. <span class="tag">~10–15 sec</span> No phone call needed.</p>
+  </div>
+  <div class="scenario">
+    <h4>3. Unexpected Visitor</h4>
+    <p>Visitor has no PIN → Terminal calls resident via app → Resident answers and issues PIN → Standard admission. If resident doesn't answer, visitor is not admitted. Event is logged.</p>
+  </div>
+  <div class="scenario">
+    <h4>4. Delivery Management</h4>
+    <p>Driver arrives → Resident pre-approval shown on dashboard (Accept / Hold at Gate / Redirect) → Delivery logged with driver details, time, and resolution. No phone calls.</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== 08 — PLATFORM ===== -->
+<div class="page" style="page-break-before: always;">
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">08</span>
+    <h2>Platform <span class="hl">Components</span></h2>
+  </div>
+
+  <div class="plat-grid">
+    <div class="plat">
+      <h4>📱 Resident Mobile App</h4>
+      <ul>
+        <li>Create visitor tickets and generate PINs</li>
+        <li>Manage recurring visitor profiles</li>
+        <li>Receive delivery notifications</li>
+        <li>One-touch call to security</li>
+        <li>Resident directory (opt-in)</li>
+      </ul>
+    </div>
+    <div class="plat">
+      <h4>🖥️ Visitor Terminal</h4>
+      <ul>
+        <li>Weatherproof touchscreen at the gate</li>
+        <li>PIN entry and resident search</li>
+        <li>Direct call to resident</li>
+        <li>Customisable with estate rules</li>
+      </ul>
+    </div>
+    <div class="plat">
+      <h4>📊 Security Dashboard</h4>
+      <ul>
+        <li>Real-time ticket queue with status indicators</li>
+        <li>One-click admit/deny controls</li>
+        <li>Recurring visitor badges for quick ID</li>
+        <li>One-click resident calling from any ticket</li>
+        <li>Searchable audit log</li>
+        <li>Multi-language (English, Afrikaans, Zulu)</li>
+      </ul>
+    </div>
+    <div class="plat">
+      <h4>⚙️ Administration Portal</h4>
+      <ul>
+        <li>Resident account management</li>
+        <li>Visitor policy configuration</li>
+        <li>Analytics and reporting</li>
+        <li>Audit export (PDF/CSV)</li>
+        <li>Estate-wide announcements</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 09 — WHAT YOU GET ===== -->
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">09</span>
+    <h2>What You <span class="hl">Get</span></h2>
+  </div>
+  <p class="lead">After deposit is paid, your system is installed and operational within <strong>2–3 weeks</strong>:</p>
+
+  <div class="deliver-row">
+    <div class="deliver">
+      <h4>🖥️ Hardware Included</h4>
+      <ul>
+        <li><strong>1x Server</strong> — on-site, pre-configured, ready to run</li>
+        <li><strong>3x Tablets</strong> — for security dashboards at the gate</li>
+        <li><strong>2x Number Pads</strong> — weatherproof, outdoor rated</li>
+        <li><strong>1x UPS</strong> — battery backup for uninterrupted operation</li>
+      </ul>
+    </div>
+    <div class="deliver">
+      <h4>🛠️ Services Included</h4>
+      <ul>
+        <li><strong>Full installation</strong> — on-site setup and configuration</li>
+        <li><strong>Security staff training</strong> — hands-on dashboard training</li>
+        <li><strong>Resident onboarding</strong> — app setup support and materials</li>
+        <li><strong>Go-live support</strong> — on-site during first week of operation</li>
+        <li><strong>Cloud backups</strong> — automated off-site data protection</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10 — BENEFITS ===== -->
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">10</span>
+    <h2>Key <span class="hl">Benefits</span></h2>
+  </div>
+  <div class="ben-grid">
+    <div class="ben"><span class="dot"></span> Gate processing time reduced by 60–80% for recurring visitors</div>
+    <div class="ben"><span class="dot"></span> Resident verification calls reduced by ~70%</div>
+    <div class="ben"><span class="dot"></span> Complete audit trail of every access event</div>
+    <div class="ben"><span class="dot"></span> Morning peak queue reduced by ~60%</div>
+    <div class="ben"><span class="dot"></span> Security officers focus on security, not phone duty</div>
+    <div class="ben"><span class="dot"></span> POPIA-compliant resident data handling</div>
+    <div class="ben"><span class="dot"></span> Custom-branded app for your estate</div>
+    <div class="ben"><span class="dot"></span> SA-based support and local understanding</div>
+  </div>
+</div>
+
+<!-- ===== 11 — Q&A ===== -->
+<div class="sect" style="page-break-before: always;">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">11</span>
+    <h2>Frequently Asked <span class="hl">Questions</span></h2>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> How long does installation take?</div>
+      <div class="a">2–3 weeks from deposit to go-live. First week includes on-site support.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> What happens if the internet goes down?</div>
+      <div class="a">The on-site server runs independently — gate access and PIN verification continue even without internet. The dashboard and audit logs sync when connectivity resumes.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> Can residents use their existing phones?</div>
+      <div class="a">Yes. The resident app works on any iOS or Android phone. No special hardware needed for residents.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> How are recurring visitors managed day-to-day?</div>
+      <div class="a">Residents tap a saved profile and generate a fresh daily PIN in about 5 seconds. The security dashboard shows a "Verified Profile" badge for quick admit — no phone call needed.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> What if a resident loses their phone?</div>
+      <div class="a">The administration portal can reset access, issue temporary PINs, or transfer profiles. Residents can also log in from any device via the web portal.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> Is my data safe and compliant?</div>
+      <div class="a">All data is encrypted in transit and at rest. PINs are one-way hashed, never stored in plaintext. Fully POPIA-compliant with configurable retention policies.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> What support is available after go-live?</div>
+      <div class="a">SA-based support with local understanding. Remote monitoring, cloud backups, and phone support included. On-site visits available for complex issues.</div>
+    </div>
+    <div class="qa-item">
+      <div class="q"><span class="marker">Q</span> Can the system handle multiple gates?</div>
+      <div class="a">Yes. The platform supports multiple entry points with synchronised dashboards and centralised audit logging across all gates.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 12 — ABOUT ===== -->
+<div class="sect">
+  <div class="sect-head">
+    <div class="accent-bar"></div>
+    <span class="sect-num">12</span>
+    <h2>About <span class="hl">Red Cape Technologies</span></h2>
+  </div>
+  <p style="font-size:9.5pt;color:#475569;line-height:1.6;margin-bottom:10px;">Red Cape Technologies builds practical security and communication systems designed from the ground up for South African residential estates. No generic products adapted for estates — everything we build is purpose-built for estate living.</p>
+
+  <table class="about-tbl">
+    <tr><td>Company</td><td>Red Cape Technologies (Pty) Ltd</td></tr>
+    <tr><td>Registration</td><td>2022 / 762895 / 07</td></tr>
+    <tr><td>Registered</td><td>10 October 2022</td></tr>
+    <tr><td>Status</td><td style="color:#0d948b;font-weight:600;">In Business</td></tr>
+  </table>
+
+  <div class="contact">
+    <div class="tag">Get in touch</div>
+    <h3>Russell Miller — Director</h3>
+    <p class="role">Ready to discuss your estate</p>
+    <div class="phone">083 700 0441</div>
+    <p class="fine">Red Cape Technologies (Pty) Ltd &nbsp;|&nbsp; Reg 2022/762895/07</p>
+  </div>
+
+  <p class="foot">
+    AnfieldVoice is a product of Red Cape Technologies (Pty) Ltd<br>
+    Confidential &bull; July 2026
+  </p>
+</div>
+</div>
 
 </body>
 </html>

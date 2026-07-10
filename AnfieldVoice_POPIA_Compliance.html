@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AnfieldVoice — POPIA Compliance Statement</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  @page { size: A4; margin: 0; @bottom-center { content: "Page " counter(page); font-family: 'Inter', sans-serif; font-size: 7.5pt; color: #94a3b8; } }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 10pt;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+  .cover {
+    page-break-after: always;
+    position: relative;
+    background: linear-gradient(160deg, #081020 0%, #0c1929 30%, #102a4a 60%, #1a3c6e 100%);
+    min-height: 841.89pt;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60pt 80pt;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    top: -180px;
+    right: -180px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .cover-inner { position: relative; z-index: 1; text-align: center; }
+  .cover .badge {
+    display: inline-block; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12); color: #8ab4d8;
+    padding: 7px 22px; border-radius: 100px; font-size: 7.5pt;
+    font-weight: 500; letter-spacing: 3.5px; text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+  .cover h1 { font-size: 44pt; font-weight: 900; letter-spacing: -2px; color: #fff; margin-bottom: 8px; line-height: 1; }
+  .cover h1 .accent { color: #14b8a6; }
+  .cover .sub { font-size: 14pt; font-weight: 300; color: #8ab4d8; margin-bottom: 4px; }
+  .cover .rule { width: 50px; height: 3px; background: linear-gradient(90deg, #14b8a6, #0d948b); margin: 24px auto; border-radius: 2px; }
+  .cover .meta { font-size: 9pt; color: #4a7ca8; line-height: 2; }
+  .cover .meta strong { color: #b0cce8; }
+  .cover .org { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .cover .org p { font-size: 7.5pt; color: #3a6a90; letter-spacing: 1.5px; text-transform: uppercase; }
+  .page { padding: 42pt 50pt; }
+  .sect { margin-bottom: 22px; }
+  .sect-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .sect-head .accent-bar { width: 4px; height: 24px; background: linear-gradient(180deg, #14b8a6, #0d948b); border-radius: 2px; flex-shrink: 0; }
+  h2 { font-size: 15pt; font-weight: 800; color: #0f1d35; letter-spacing: -0.3px; line-height: 1.2; margin: 0; }
+  h2 .hl { color: #0d948b; }
+  h3 { font-size: 10.5pt; font-weight: 700; color: #0f172a; margin: 12px 0 4px; }
+  p { margin-bottom: 6px; color: #334155; font-size: 9.5pt; line-height: 1.5; }
+  ul { list-style: none; padding: 0; margin: 4px 0 10px; }
+  ul li { padding: 2px 0 2px 16px; position: relative; font-size: 9pt; color: #334155; line-height: 1.45; }
+  ul li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; background: #0d948b; border-radius: 50%; opacity: 0.5; }
+  .notice {
+    background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 6px;
+    padding: 12px 16px; margin: 14px 0; font-size: 9pt; color: #065f46; line-height: 1.5;
+  }
+  .notice strong { color: #064e3b; }
+  .hlbox {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+    padding: 12px 16px; margin: 10px 0;
+  }
+  .hlbox h4 { font-size: 10pt; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .hlbox p { font-size: 8.5pt; color: #475569; margin: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; }
+  td, th { padding: 6px 10px; border: 1px solid #e2e8f0; vertical-align: top; text-align: left; }
+  th { background: #0f1d35; color: #fff; font-weight: 600; font-size: 8.5pt; }
+  td:first-child { font-weight: 600; }
+  .foot { text-align: center; margin-top: 20px; font-size: 7.5pt; color: #94a3b8; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-inner">
+    <div class="badge">Red Cape Technologies (Pty) Ltd</div>
+    <h1>Anfield<span class="accent">Voice</span></h1>
+    <p class="sub">POPIA Compliance Statement</p>
+    <p style="font-size:10pt;color:#6a9ec8;margin-bottom:4px;">Data Protection &amp; Processing Addendum</p>
+    <div class="rule"></div>
+    <p class="meta"><strong>Version</strong> &nbsp; 1.0 — July 2026</p>
+    <p class="meta"><strong>Compliance Framework</strong> &nbsp; Protection of Personal Information Act, 2013 (POPIA)</p>
+    <div class="org">
+      <p>Red Cape Technologies (Pty) Ltd &nbsp;|&nbsp; Reg 2022/762895/07</p>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<div class="notice">
+  <strong>About this document.</strong> This POPIA Compliance Statement outlines how Red Cape Technologies (Pty) Ltd processes personal information on behalf of residential estates using the AnfieldVoice platform. It serves as the Data Processing Addendum between Red Cape (as <strong>operator</strong>) and the Client estate or body corporate (as the <strong>responsible party</strong>). This document should be read together with the AnfieldVoice Terms of Service and the Client's own privacy policy.
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>1. <span class="hl">Definitions (POPIA Terms)</span></h2></div>
+  <table>
+    <tr><th style="width:25%;">Term</th><th>Meaning under POPIA / This Document</th></tr>
+    <tr><td>Personal Information</td><td>Information relating to an identifiable, living natural person or an existing juristic person, including name, contact details, identity number, vehicle registration, unit number, and any digital records created through use of the Platform.</td></tr>
+    <tr><td>Data Subject</td><td>The resident, visitor, security officer, or any individual whose Personal Information is processed through the Platform.</td></tr>
+    <tr><td>Responsible Party</td><td>The Client (residential estate, body corporate, or property manager) that determines the purpose and means of processing Personal Information.</td></tr>
+    <tr><td>Operator</td><td>Red Cape Technologies (Pty) Ltd, which processes Personal Information on behalf of the Responsible Party.</td></tr>
+    <tr><td>Processing</td><td>Any operation or activity concerning Personal Information, including collection, recording, storage, retrieval, use, disclosure, and deletion.</td></tr>
+    <tr><td>Consent</td><td>Any voluntary, specific, and informed expression of will by a Data Subject agreeing to the processing of their Personal Information.</td></tr>
+    <tr><td>Information Regulator</td><td>The independent regulatory body established under POPIA, responsible for overseeing compliance.</td></tr>
+  </table>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>2. <span class="hl">Roles &amp; Responsibilities</span></h2></div>
+  <div class="hlbox">
+    <h4>Responsible Party: The Client (Estate / Body Corporate)</h4>
+    <p>Determines which personal information is collected, for what purpose, and how it is used. Responsible for obtaining consent from residents, providing privacy notices, and responding to data subject requests.</p>
+  </div>
+  <div class="hlbox">
+    <h4>Operator: Red Cape Technologies (Pty) Ltd</h4>
+    <p>Processes personal information only on documented instructions from the Client. Implements security measures, maintains records, assists with compliance, and ensures lawful processing.</p>
+  </div>
+  <p>This relationship is governed by Section 21 of POPIA, which requires that an operator process information only with the knowledge and authority of the responsible party, and maintain the security of the information.</p>
+</div>
+
+<div class="sect" style="page-break-before: always;">
+  <div class="sect-head"><div class="accent-bar"></div><h2>3. <span class="hl">Categories of Personal Information Processed</span></h2></div>
+  <table>
+    <tr><th>Category</th><th>Examples</th><th>Purpose</th></tr>
+    <tr><td>Resident Identity &amp; Contact</td><td>Full name, unit/apartment number, mobile phone number, email address</td><td>Account creation, visitor ticketing, communication, directory, security verification</td></tr>
+    <tr><td>Visitor Information</td><td>Full name, vehicle details (make, model, colour, registration number), category (guest, domestic worker, contractor), scheduled arrival times</td><td>Visitor ticketing, security verification, recurring visitor profiles, audit trail</td></tr>
+    <tr><td>Recurring Visitor Profiles</td><td>Full name, mobile number, vehicle details, typical arrival days/times, category, notes</td><td>Streamlined daily authorisation for frequent visitors</td></tr>
+    <tr><td>Delivery Records</td><td>Delivery service name, driver details, package description, resolution (accepted, held, redirected)</td><td>Delivery management, resident notification, audit trail</td></tr>
+    <tr><td>Audit Logs</td><td>Timestamps, admission/denial decisions, security officer ID, resident approval records, PIN validation results</td><td>Immutable record of all access events for security and compliance</td></tr>
+    <tr><td>Communications</td><td>Call logs (SIP), message history, push notification records</td><td>Resident-security communication, call history, estate broadcasts</td></tr>
+    <tr><td>Account &amp; Configuration</td><td>User account credentials, role assignments, estate policy settings, preferences</td><td>Access control, service configuration, personalisation</td></tr>
+  </table>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>4. <span class="hl">Lawful Basis for Processing</span></h2></div>
+  <p>AnfieldVoice processes Personal Information on the following lawful bases under POPIA:</p>
+  <table>
+    <tr><th style="width:28%;">Basis</th><th>Application</th></tr>
+    <tr><td>Consent</td><td>Residents consent to the collection and use of their personal information when they activate their account, opt into the resident directory, and create visitor tickets. Visitors implicitly consent by using the visitor terminal. Consent can be withdrawn at any time by contacting the Client or Red Cape.</td></tr>
+    <tr><td>Performance of a Contract</td><td>Processing necessary to deliver the AnfieldVoice service to the Client, including resident account management, ticketing, and security verification.</td></tr>
+    <tr><td>Legal Obligation</td><td>Audit trail retention for security incident investigation, compliance with POPIA record-keeping requirements, and response to lawful requests from the Information Regulator or law enforcement.</td></tr>
+    <tr><td>Legitimate Interest</td><td>Security of the estate and its residents — processing visitor information, maintaining audit logs, and managing access decisions are in the legitimate interest of all parties.</td></tr>
+  </table>
+  <div class="notice">
+    <strong>Important:</strong> The Client (as responsible party) is required to provide residents with a privacy notice that explains these processing activities and their rights under POPIA. Red Cape can assist in drafting this notice.
+  </div>
+</div>
+
+<div class="sect" style="page-break-before: always;">
+  <div class="sect-head"><div class="accent-bar"></div><h2>5. <span class="hl">Technical &amp; Organisational Security Measures</span></h2></div>
+  <p>Red Cape implements the following security measures to protect Personal Information against loss, unlawful access, and unauthorised processing, as required by Section 19 of POPIA:</p>
+
+  <h3>Technical Measures</h3>
+  <table>
+    <tr><th style="width:32%;">Measure</th><th>Implementation</th></tr>
+    <tr><td>Encryption in Transit</td><td>TLS 1.3 enforced for all API, SIP signalling, WebSocket, and web traffic. No unencrypted communication accepted.</td></tr>
+    <tr><td>Encryption at Rest</td><td>AES-256 encryption for all stored data, including resident records, visitor information, and audit logs.</td></tr>
+    <tr><td>PIN Protection</td><td>Visitor PINs are one-way hashed using bcrypt with a work factor of 12. Plaintext PINs are never stored. Valid PINs exist only in memory during validation.</td></tr>
+    <tr><td>Access Controls</td><td>Role-based access control with four distinct roles (Resident, Property Admin, Body Corporate, Security Officer). Fine-grained permissions per function.</td></tr>
+    <tr><td>Authentication</td><td>Strong password policies. Session management with automatic timeout. Multi-factor authentication available for administrator accounts.</td></tr>
+    <tr><td>Database Security</td><td>IP whitelisting, certificate-based authentication, separate read-only replicas for reporting.</td></tr>
+    <tr><td>Audit Logging</td><td>All administrative actions, security decisions, and data access events are logged immutably. Logs cannot be modified or deleted.</td></tr>
+    <tr><td>Network Security</td><td>Firewalled infrastructure, intrusion detection, DDoS protection, regular vulnerability scanning.</td></tr>
+    <tr><td>Backup &amp; Recovery</td><td>Hourly incremental backups, daily full backups, encrypted off-site storage. Recovery tested quarterly.</td></tr>
+    <tr><td>Software Security</td><td>Regular automated security updates. Dependency vulnerability scanning. Code review process for all changes.</td></tr>
+  </table>
+
+  <h3>Organisational Measures</h3>
+  <ul>
+    <li>Access to production systems is restricted to authorised Red Cape personnel on a least-privilege basis</li>
+    <li>All personnel with access to Personal Information undergo POPIA awareness training</li>
+    <li>Confidentiality agreements in place for all employees and contractors</li>
+    <li>Data breach response plan in place — notification to Client and Information Regulator within 72 hours</li>
+    <li>Data Protection Officer (DPO) appointed and registered</li>
+    <li>Quarterly security reviews and annual penetration testing</li>
+    <li>Vendor due diligence for any subcontractors with data access</li>
+  </ul>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>6. <span class="hl">Data Subject Rights</span></h2></div>
+  <p>POPIA grants Data Subjects the following rights. The Client (as responsible party) is primarily responsible for responding to these requests, with Red Cape providing reasonable assistance:</p>
+  <table>
+    <tr><th style="width:28%;">Right</th><th>How It Is Exercised</th></tr>
+    <tr><td>Right to Access</td><td>Data Subjects may request confirmation of whether their Personal Information is processed, and request a copy of the information. Requests should be directed to the Client in the first instance. Red Cape will provide data exports within 14 days.</td></tr>
+    <tr><td>Right to Correction</td><td>Data Subjects may request correction of inaccurate or outdated information. Residents can update their own profile through the mobile app. Other corrections can be made through the administration portal or by contacting Red Cape.</td></tr>
+    <tr><td>Right to Deletion</td><td>Data Subjects may request deletion of their Personal Information. Red Cape will process deletion requests within 14 days, subject to legal retention requirements (audit logs may be retained for the period required by law).</td></tr>
+    <tr><td>Right to Object</td><td>Data Subjects may object to the processing of their Personal Information on reasonable grounds. The Client will assess the objection and respond within 14 days.</td></tr>
+    <tr><td>Right to Withdraw Consent</td><td>Where processing is based on consent, the Data Subject may withdraw consent at any time. Withdrawal does not affect the lawfulness of processing before withdrawal.</td></tr>
+    <tr><td>Right to Complain</td><td>Data Subjects have the right to lodge a complaint with the Information Regulator (Regulator) if they believe their rights under POPIA have been infringed. Contact details are provided in Section 11.</td></tr>
+  </table>
+</div>
+
+<div class="sect" style="page-break-before: always;">
+  <div class="sect-head"><div class="accent-bar"></div><h2>7. <span class="hl">Data Retention &amp; Deletion</span></h2></div>
+  <table>
+    <tr><th style="width:32%;">Data Type</th><th>Default Retention Period</th><th>Basis</th></tr>
+    <tr><td>Resident account information</td><td>Duration of residency + 12 months</td><td>Contractual need + reasonable transition period</td></tr>
+    <tr><td>Visitor tickets (standard)</td><td>12 months</td><td>Audit &amp; dispute resolution</td></tr>
+    <tr><td>Visitor tickets (denied/expired)</td><td>6 months</td><td>Security incident investigation</td></tr>
+    <tr><td>Recurring visitor profiles</td><td>Active until profile deleted + 3 months</td><td>Resident convenience + reasonable notice</td></tr>
+    <tr><td>Audit logs</td><td>24 months (configurable)</td><td>POPIA Section 14 record-keeping + security</td></tr>
+    <tr><td>Delivery records</td><td>12 months</td><td>Dispute resolution &amp; liability management</td></tr>
+    <tr><td>Call logs</td><td>6 months</td><td>Communication history &amp; dispute resolution</td></tr>
+    <tr><td>Backups</td><td>30 days (incremental), 90 days (full)</td><td>Disaster recovery</td></tr>
+  </table>
+  <p>Retention periods are configurable by the Client through the administration portal to meet specific estate policies or legal requirements. Upon termination of the service agreement, Red Cape will provide a complete data export and securely delete all Client data within 90 days.</p>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>8. <span class="hl">Cross-Border Data Transfer</span></h2></div>
+  <p>8.1 The AnfieldVoice platform processes and stores all data within the Republic of South Africa. For cloud-hosted deployments, the hosting infrastructure is located in Amazon Web Services' Cape Town region (af-south-1).</p>
+  <p>8.2 No Personal Information is transferred outside of South Africa unless:</p>
+  <ul>
+    <li>The Client provides explicit written consent; and</li>
+    <li>Appropriate safeguards are in place (binding corporate rules, standard contractual clauses, or an adequacy determination by the Information Regulator); and</li>
+    <li>The Data Subject has been informed of the transfer.</li>
+  </ul>
+  <p>8.3 Push notifications to Apple (APNs) and Google (FCM) devices involve the transmission of a device token to servers located in the US. These tokens are non-identifying and do not contain Personal Information. The notification payload is encrypted end-to-end.</p>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>9. <span class="hl">Data Breach Notification</span></h2></div>
+  <p>In the event of a data breach involving Personal Information processed through the AnfieldVoice platform, Red Cape shall:</p>
+  <ul>
+    <li>Notify the Client's designated contact within 72 hours of becoming aware of the breach</li>
+    <li>Provide details of the nature, extent, and possible impact of the breach</li>
+    <li>Identify the categories of Personal Information compromised (where known)</li>
+    <li>Describe the measures taken or proposed to address the breach and mitigate potential harm</li>
+    <li>Assist the Client in notifying the Information Regulator and affected Data Subjects as required by Section 22 of POPIA</li>
+    <li>Cooperate fully with any investigation by the Information Regulator</li>
+  </ul>
+  <p>Each breach will be documented, investigated, and remediated. A post-incident report will be provided to the Client within 14 days, including root cause analysis and preventive measures implemented.</p>
+</div>
+
+<div class="sect" style="page-break-before: always;">
+  <div class="sect-head"><div class="accent-bar"></div><h2>10. <span class="hl">Client Obligations</span></h2></div>
+  <p>As the responsible party under POPIA, the Client agrees to:</p>
+  <ul>
+    <li><strong>Provide Privacy Notices:</strong> Inform residents and visitors about what Personal Information is collected, how it is processed, and their rights under POPIA</li>
+    <li><strong>Obtain Consents:</strong> Obtain and manage resident consent for the processing of their Personal Information, including directory opt-in/opt-out preferences</li>
+    <li><strong>Respond to Data Subjects:</strong> Handle data subject access requests, correction requests, and complaints within the timeframes required by POPIA</li>
+    <li><strong>Maintain Accuracy:</strong> Ensure that resident account information is kept current and accurate</li>
+    <li><strong>Access Control:</strong> Properly manage user accounts and permissions, deactivating accounts promptly when users no longer require access</li>
+    <li><strong>Notify Red Cape:</strong> Inform Red Cape of any changes to lawful processing instructions or data handling requirements</li>
+    <li><strong>Data Retention:</strong> Configure appropriate data retention periods in the administration portal to comply with estate policies and legal requirements</li>
+  </ul>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>11. <span class="hl">Information Regulator Contact Details</span></h2></div>
+  <p>Data Subjects who believe their rights have been infringed may lodge a complaint with the Information Regulator:</p>
+  <p style="margin-top:8px;">
+    <strong>Information Regulator (South Africa)</strong><br>
+    JD House, 27 Stiemens Street, Braamfontein, Johannesburg, 2001<br>
+    PO Box 31533, Braamfontein, Johannesburg, 2017<br>
+    Complaints email: <strong>complaints.IR@justice.gov.za</strong><br>
+    General enquiries: <strong>inforeg@justice.gov.za</strong><br>
+    Website: <strong>www.justice.gov.za/inforeg/</strong><br>
+    Tel: +27 (0)10 023 5200
+  </p>
+</div>
+
+<div class="sect">
+  <div class="sect-head"><div class="accent-bar"></div><h2>12. <span class="hl">Contact — Red Cape Technologies</span></h2></div>
+  <p>For data protection enquiries, POPIA matters, or to exercise data subject rights through the operator:</p>
+  <p style="margin-top:8px;">
+    <strong>Red Cape Technologies (Pty) Ltd</strong><br>
+    Reg: 2022/762895/07<br>
+    Director: Russell Miller<br>
+    Phone: 083 700 0441<br>
+    Email: <strong>russell@redcapetech.co.za</strong><br>
+    POPIA enquiries: <strong>popia@redcapetech.co.za</strong>
+  </p>
+  <p style="margin-top:10px;">For data subject access requests, please contact the Client (your estate management or body corporate) in the first instance. Red Cape will assist the Client in responding to requests.</p>
+</div>
+
+<p class="foot">AnfieldVoice is a product of Red Cape Technologies (Pty) Ltd &nbsp;|&nbsp; POPIA Compliance Statement v1.0 &nbsp;|&nbsp; July 2026</p>
+</div>
+
+</body>
+</html>

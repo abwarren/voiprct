@@ -127,6 +127,37 @@ function initWs() {
         hideIncomingCall();
       }
     },
+    onMessage: (data) => {
+      // Forward WebRTC signalling to the gate view
+      (async () => {
+        if (data.type === 'sdp_offer' || data.type === 'sdp_answer') {
+          const { webPc } = window;
+          if (webPc && data.sdp) {
+            const type = data.type === 'sdp_offer' ? 'offer' : 'answer';
+            try {
+              await webPc.setRemoteDescription(new RTCSessionDescription({ type, sdp: data.sdp }));
+              if (type === 'offer') {
+                const answer = await webPc.createAnswer();
+                await webPc.setLocalDescription(answer);
+                const { sendWs } = await import('../ws.js');
+                sendWs({ type: 'sdp_answer', call_id: data.call_id, sdp: answer.sdp });
+              }
+            } catch (err) {
+              console.warn('[WebRTC] SDP error:', err);
+            }
+          }
+        }
+        if (data.type === 'ice_candidate' && window.webPc && data.candidate) {
+          try {
+            await window.webPc.addIceCandidate(new RTCIceCandidate({
+              candidate: data.candidate,
+              sdpMid: data.sdp_mid,
+              sdpMLineIndex: data.sdp_mline_index,
+            }));
+          } catch {}
+        }
+      })();
+    },
   });
 
   connectWs();

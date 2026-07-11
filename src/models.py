@@ -278,3 +278,30 @@ class GateCallHistory(BaseModel):
     apartment_id: Optional[int] = None
     limit: int = 50
     offset: int = 0
+
+
+# ============================================================================
+# WebRTC Signalling (Slice 2)
+# ============================================================================
+
+
+class SdpOffer(BaseModel):
+    """SDP offer sent from the answering client."""
+    call_id: int
+    sdp: str
+    type: str = "offer"
+
+
+class SdpAnswer(BaseModel):
+    """SDP answer sent back to the answering client."""
+    call_id: int
+    sdp: str
+    type: str = "answer"
+
+
+class IceCandidate(BaseModel):
+    """ICE candidate for trickle ICE."""
+    call_id: int
+    candidate: str
+    sdp_mid: Optional[str] = None
+    sdp_mline_index: Optional[int] = None

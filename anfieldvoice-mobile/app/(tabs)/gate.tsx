@@ -18,6 +18,8 @@ import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { useWebSocket } from '../../src/hooks/useWebSocket';
+import { useWebRtc } from '../../src/hooks/useWebRTC';
+import CallScreen from '../../src/components/CallScreen';
 import { Colors, Spacing, FontSize, BorderRadius } from '../../src/theme';
 import { Card } from '../../src/components/Card';
 import * as api from '../../src/api/client';
@@ -25,10 +27,16 @@ import type { GateCall } from '../../src/types';
 
 export default function GateScreen() {
   const { user } = useAuth();
-  const { incomingCall, clearIncomingCall, send, state: wsState } = useWebSocket();
+  const { incomingCall, clearIncomingCall, send, lastEvent, state: wsState } = useWebSocket();
+  const {
+    callState, answerCall, endCall,
+    toggleMute, toggleSpeaker, isMuted, isSpeakerOn, durationSecs,
+    handleRemoteSdp, handleRemoteIce, error: webrtcError,
+  } = useWebRtc({ sendWs: send });
   const [history, setHistory] = useState<GateCall[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [pulseAnim] = useState(() => new Animated.Value(1));
+  const [activeCallInfo, setActiveCallInfo] = useState<{ callId: number; callerUnit: string } | null>(null);
 
   // Pulse animation for incoming call
   useEffect(() => {
@@ -78,8 +86,9 @@ export default function GateScreen() {
   const handleAnswer = async () => {
     if (!incomingCall) return;
     send({ type: 'answer_call', call_id: incomingCall.call_id, action: 'answer' });
-    // Fallback: also hit REST endpoint
     await api.gateCallAction(incomingCall.call_id, 'answer');
+    setActiveCallInfo({ callId: incomingCall.call_id, callerUnit: incomingCall.caller_unit });
+    await answerCall(incomingCall.call_id);
     clearIncomingCall();
   };
 
@@ -89,6 +98,33 @@ export default function GateScreen() {
     await api.gateCallAction(incomingCall.call_id, 'reject');
     clearIncomingCall();
   };
+
+  const handleEndCall = () => {
+    endCall();
+    setActiveCallInfo(null);
+  };
+
+  const handleDismissCall = () => {
+    setActiveCallInfo(null);
+  };
+
+  // Handle incoming WebRTC signalling from WebSocket
+  useEffect(() => {
+    if (!lastEvent || !activeCallInfo) return;
+    const msg = lastEvent as Record<string, unknown>;
+    if (msg.type === 'sdp_offer' && typeof msg.sdp === 'string') {
+      handleRemoteSdp(msg.call_id as number, msg.sdp, 'offer');
+    } else if (msg.type === 'sdp_answer' && typeof msg.sdp === 'string') {
+      handleRemoteSdp(msg.call_id as number, msg.sdp, 'answer');
+    } else if (msg.type === 'ice_candidate' && typeof msg.candidate === 'string') {
+      handleRemoteIce(
+        msg.call_id as number,
+        msg.candidate as string,
+        msg.sdp_mid as string | undefined,
+        msg.sdp_mline_index as number | undefined,
+      );
+    }
+  }, [lastEvent, activeCallInfo, handleRemoteSdp, handleRemoteIce]);
 
   return (
     <View style={styles.container}>
@@ -200,6 +236,27 @@ export default function GateScreen() {
         )}
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Active Call Screen */}
+      {activeCallInfo && callState !== 'idle' && (
+        <CallScreen
+          callState={callState}
+          callerUnit={activeCallInfo.callerUnit}
+          durationSecs={durationSecs}
+          isMuted={isMuted}
+          isSpeakerOn={isSpeakerOn}
+          onToggleMute={toggleMute}
+          onToggleSpeaker={toggleSpeaker}
+          onEndCall={handleEndCall}
+          onDismiss={callState === 'ended' ? handleDismissCall : undefined}
+        />
+      )}
+
+      {webrtcError && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>{webrtcError}</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -383,5 +440,21 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xs,
     fontWeight: '700',
     textTransform: 'capitalize',
+  },
+  errorBanner: {
+    position: 'absolute',
+    bottom: 100,
+    left: Spacing.lg,
+    right: Spacing.lg,
+    backgroundColor: Colors.error + 'E0',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    zIndex: 300,
+  },
+  errorText: {
+    color: Colors.white,
+    fontSize: FontSize.sm,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

@@ -105,10 +105,62 @@ export function showIncomingCall(data) {
           <span>Reject</span>
         </button>
       </div>
+      <div id="web-call-controls" style="display:none;margin-top:16px">
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px">Call active</p>
+        <button class="btn btn-danger btn-sm" onclick="webEndCall(${data.call_id})">End Call</button>
+      </div>
     </div>
   `;
   overlay.classList.remove('hidden');
 }
+
+// WebRTC for browser (uses native browser APIs)
+let webPc = null;
+let webLocalStream = null;
+
+window.startWebRtc = async (callId) => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    webLocalStream = stream;
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    });
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        const { sendWs } = await import('../ws.js');
+        sendWs({ type: 'ice_candidate', call_id: callId, candidate: e.candidate.candidate, sdp_mid: e.candidate.sdpMid, sdp_mline_index: e.candidate.sdpMLineIndex });
+      }
+    };
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    const { sendWs } = await import('../ws.js');
+    sendWs({ type: 'sdp_offer', call_id: callId, sdp: offer.sdp });
+    webPc = pc;
+    document.querySelector('#web-call-controls').style.display = 'block';
+  } catch (err) {
+    alert('Microphone access denied: ' + err.message);
+  }
+};
+
+window.webEndCall = (callId) => {
+  if (webPc) { webPc.close(); webPc = null; }
+  if (webLocalStream) { webLocalStream.getTracks().forEach(t => t.stop()); webLocalStream = null; }
+  hideIncomingCall();
+};
+
+// Override handleAnswer to include WebRTC
+const _origAnswer = window.handleAnswer;
+window.handleAnswer = async (callId) => {
+  const { sendWs } = await import('../ws.js');
+  const { gateCallAction } = await import('../api.js');
+  sendWs({ type: 'answer_call', call_id: callId, action: 'answer' });
+  await gateCallAction(callId, 'answer');
+  // Start WebRTC
+  document.querySelector('#web-call-controls').style.display = 'block';
+  document.querySelector('.call-actions')?.remove();
+  startWebRtc(callId);
+};
 
 export function hideIncomingCall() {
   document.getElementById('call-overlay').classList.add('hidden');

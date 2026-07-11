@@ -7,12 +7,14 @@ let reconnectTimer = null;
 let onIncomingCall = null;
 let onCallUpdated = null;
 let onConnect = null;
+let onMessage = null;
 const WS_BASE = location.origin.replace(/^http/, 'ws');
 
 export function setWsCallbacks(callbacks) {
   onIncomingCall = callbacks.onIncomingCall || null;
   onCallUpdated = callbacks.onCallUpdated || null;
   onConnect = callbacks.onConnect || null;
+  onMessage = callbacks.onMessage || null;
 }
 
 export function connectWs() {
@@ -41,6 +43,9 @@ export function connectWs() {
           case 'call_updated':
             if (onCallUpdated) onCallUpdated(data);
             break;
+          default:
+            // Forward all other messages (SDP, ICE, etc.) to onMessage handler
+            if (onMessage) onMessage(data);
         }
       } catch (err) {
         console.warn('[WS] Parse error:', err);

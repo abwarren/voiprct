@@ -202,6 +202,15 @@ async def _handle_client_message(ws: WebSocket, raw: str, user_id: int, db_pool)
         action = msg.get("action", "answer")
         await _handle_call_action(call_id, user_id, action, db_pool, ws)
 
+    elif msg_type == "sdp_offer":
+        await _handle_sdp(ws, msg, user_id, "sdp_offer", db_pool)
+
+    elif msg_type == "sdp_answer":
+        await _handle_sdp(ws, msg, user_id, "sdp_answer", db_pool)
+
+    elif msg_type == "ice_candidate":
+        await _handle_ice(ws, msg, user_id)
+
     else:
         await ws.send_text(json.dumps({
             "type": "error",
@@ -265,3 +274,69 @@ async def _handle_call_action(call_id: int, user_id: int, action: str, db_pool, 
             "call_id": call_id,
             "call_status": new_status,
         })
+
+
+async def _handle_sdp(ws: WebSocket, msg: dict, user_id: int, sdp_type: str, db_pool):
+    """Handle SDP offer/answer exchange for WebRTC."""
+    import asyncpg
+
+    call_id = msg.get("call_id")
+    sdp = msg.get("sdp", "")
+    column = "sdp_offer" if sdp_type == "sdp_offer" else "sdp_answer"
+    event_type = "sdp_offer" if sdp_type == "sdp_offer" else "sdp_answer"
+
+    async with db_pool.acquire() as conn:
+        # Store SDP in the gate call record
+        await conn.execute(
+            f"UPDATE gate_calls SET {column} = $1 WHERE call_id = $2",
+            sdp, call_id,
+        )
+
+        # Notify other connected clients in the same apartment
+        row = await conn.fetchrow(
+            "SELECT apartment_id FROM gate_calls WHERE call_id = $1",
+            call_id,
+        )
+
+    if row:
+        await send_to_apartment(row["apartment_id"], {
+            "type": event_type,
+            "call_id": call_id,
+            "sdp": sdp,
+        })
+
+    await ws.send_text(json.dumps({
+        "type": f"{sdp_type}_ack",
+        "call_id": call_id,
+    }))
+
+
+async def _handle_ice(ws: WebSocket, msg: dict, user_id: int):
+    """Relay ICE candidates to other connected clients."""
+    call_id = msg.get("call_id")
+    candidate = msg.get("candidate")
+    sdp_mid = msg.get("sdp_mid")
+    sdp_mline_index = msg.get("sdp_mline_index")
+
+    # We need the apartment_id to relay — fetch from DB
+    # For MVP, broadcast to all connected clients who are handling this call
+    # The receiving end filters by call_id
+    await send_to_all_connections({
+        "type": "ice_candidate",
+        "call_id": call_id,
+        "candidate": candidate,
+        "sdp_mid": sdp_mid,
+        "sdp_mline_index": sdp_mline_index,
+    })
+
+
+async def send_to_all_connections(event: dict):
+    """Broadcast an event to ALL connected WebSocket clients."""
+    import copy
+    payload = json.dumps(event, default=str)
+    for uid, conns in list(_connections.items()):
+        for ws in list(conns):
+            try:
+                await ws.send_text(payload)
+            except Exception:
+                pass

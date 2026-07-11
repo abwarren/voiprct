@@ -3,30 +3,35 @@
     "name": "AnfieldVoice",
     "slug": "anfieldvoice-mobile",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "orientation": "default",
+    "icon": "./assets/images/icon.png",
     "scheme": "anfieldvoice",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1a1a2e"
+      "backgroundColor": "#0F172A"
     },
     "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.redcape.anfieldvoice",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.redcapetech.anfieldvoice",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "AnfieldVoice uses Face ID to secure your account"
-      }
+        "NSFaceIDUsageDescription": "AnfieldVoice uses Face ID or Touch ID to securely access your account without re-entering your password.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "associatedDomains": []
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1a1a2e"
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png",
+        "backgroundColor": "#0F172A"
       },
-      "package": "com.redcape.anfieldvoice",
-      "permissions": []
+      "package": "com.redcapetech.anfieldvoice",
+      "permissions": [],
+      "intentFilters": []
     },
     "plugins": [
       "expo-router",

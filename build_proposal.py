@@ -229,7 +229,7 @@ doc.add_heading('Technology Stack', level=2)
 add_colored_table(doc,
     ['Layer', 'Technology', 'Purpose'],
     [
-        ['Mobile Apps', 'Custom-branded iOS & Android (Linphone core)', 'Resident & security communication'],
+        ['Mobile Apps', 'Custom-branded iOS & Android', 'Resident & security communication'],
         ['SIP Proxy', 'Kamailio', 'Registration, routing, load balancing'],
         ['Media Server', 'FreeSWITCH', 'Voice & video call processing'],
         ['Database', 'PostgreSQL', 'Visitor records, audit trails, resident data'],
@@ -354,8 +354,7 @@ doc.add_heading('5. Product Features', level=1)
 
 doc.add_heading('5.1 Resident Mobile Application', level=2)
 doc.add_paragraph(
-    'A custom-branded application available on iOS and Android, built on the proven Linphone '
-    'open-source telephony stack. The app provides:'
+    'A custom-branded mobile application available on iOS and Android. The app provides:'
 )
 features_resident = [
     'Visitor Ticketing \u2014 Create one-time or recurring visitor tickets with PIN generation',
@@ -830,7 +829,7 @@ arch_text = (
     '                            RESIDENT MOBILE APPS\n'
     '        +-------------+  +-------------+  +-------------+\n'
     '        |   iOS App   |  | Android App |  | Desktop App |\n'
-    '        | (Linphone)  |  | (Linphone)  |  | (Linphone)  |\n'
+    '        | (SIP SDK)   |  | (SIP SDK)   |  | (SIP SDK)   |\n'
     '        +------+------+  +------+------+  +------+------+\n'
     '               |                |                |\n'
     '               +----------------+----------------+\n'
@@ -880,7 +879,7 @@ add_colored_table(doc,
         ['Media Server', 'FreeSWITCH 1.10+', 'Handles voice/video transcoding, conferencing, IVR.'],
         ['Database', 'PostgreSQL 16+', 'ACID-compliant, mature, excellent replication and backup.'],
         ['API Server', 'FastAPI / Node.js', 'REST + WebSocket for apps, dashboards, integrations.'],
-        ['Mobile Apps', 'Linphone SDK', 'Open-source SIP client. Customisable UI. iOS, Android, desktop.'],
+        ['Mobile Apps', 'Custom SDK', 'Custom-branded mobile apps. iOS, Android, desktop.'],
         ['Visitor Terminal', 'PWA', 'Works on any modern browser. Deploy on ruggedised hardware.'],
         ['Dashboards', 'React / Vue.js SPA', 'Real-time web interfaces. Lightweight, low-spec friendly.'],
         ['Push Notifications', 'APNs + FCM', 'Apple and Google push for background call delivery.'],
@@ -1233,11 +1232,11 @@ doc.add_heading('20.1 Platform Licensing', level=2)
 add_colored_table(doc,
     ['Component', 'Model', 'Rate (per unit/month)', 'Annual (360 units)'],
     [
-        ['AnfieldVoice Platform (Core)', 'Per-unit SaaS', 'R 45 \u2013 R 65', 'R 194,400 \u2013 R 280,800'],
+        ['AnfieldVoice Platform (Core)', 'Per-unit SaaS', 'Free', 'Free'],
         ['Resident Mobile App (Branded)', 'Included in platform', '\u2014', '\u2014'],
         ['Security Dashboard', 'Included in platform', '\u2014', '\u2014'],
         ['Administration Portal', 'Included in platform', '\u2014', '\u2014'],
-        ['Visitor Terminal License', 'Per terminal', 'R 250 \u2013 R 400', 'R 3,000 \u2013 R 4,800'],
+        ['Visitor Terminal License', 'Per terminal', 'Free', 'Free'],
     ]
 )
 
@@ -1251,12 +1250,12 @@ doc.add_heading('20.2 One-Time Setup', level=2)
 add_colored_table(doc,
     ['Item', 'Indicative Cost', 'Notes'],
     [
-        ['Deployment & Configuration', 'R 35,000 \u2013 R 55,000', 'Phases 1\u20133: discovery, infrastructure, platform config'],
-        ['Custom App Branding', 'R 15,000 \u2013 R 25,000', 'One-time: custom logo, colours, app store listing setup'],
-        ['Staff Training', 'R 8,000 \u2013 R 15,000', 'On-site security staff training (Phase 4)'],
-        ['Resident Onboarding Programme', 'R 12,000 \u2013 R 20,000', 'Materials, launch event, support during Phase 5'],
-        ['Hardware \u2014 Visitor Terminal', 'R 8,000 \u2013 R 18,000', 'Per terminal. Weatherproof touchscreen + mounting.'],
-        ['Hardware \u2014 Security Dashboard PC', 'R 6,000 \u2013 R 12,000', 'Per station. Standard office PC or all-in-one.'],
+        ['Deployment & Configuration', 'Free', 'Phases 1\u20133: discovery, infrastructure, platform config'],
+        ['Custom App Branding', 'Free', 'One-time: custom logo, colours, app store listing setup'],
+        ['Staff Training', 'Free', 'On-site security staff training (Phase 4)'],
+        ['Resident Onboarding Programme', 'Free', 'Materials, launch event, support during Phase 5'],
+        ['Hardware \u2014 Visitor Terminal', 'At cost', 'Per terminal. Weatherproof touchscreen + mounting.'],
+        ['Hardware \u2014 Security Dashboard PC', 'At cost', 'Per station. Standard office PC or all-in-one.'],
     ]
 )
 
@@ -1265,10 +1264,10 @@ doc.add_heading('20.3 Ongoing Services', level=2)
 add_colored_table(doc,
     ['Service', 'Model', 'Indicative Rate'],
     [
-        ['Support & Maintenance (Standard)', 'Per-unit/month', 'R 12 \u2013 R 18'],
-        ['Support & Maintenance (Premium)', 'Per-unit/month', 'R 22 \u2013 R 30'],
-        ['Cloud Hosting (if applicable)', 'Per-unit/month', 'R 15 \u2013 R 25'],
-        ['On-Premises Server Maintenance', 'Monthly retainer', 'R 3,500 \u2013 R 6,000'],
+        ['Support & Maintenance (Standard)', 'Per-unit/month', 'Free'],
+        ['Support & Maintenance (Premium)', 'Per-unit/month', 'Free'],
+        ['Cloud Hosting (if applicable)', 'Per-unit/month', 'Free'],
+        ['On-Premises Server Maintenance', 'Monthly retainer', 'Free'],
     ]
 )
 
@@ -1277,28 +1276,26 @@ doc.add_heading('20.4 Illustrative Total (360 Units, Cloud-Hosted)', level=2)
 add_colored_table(doc,
     ['Category', 'Annual Cost (Range)'],
     [
-        ['Platform Licensing', 'R 194,400 \u2013 R 280,800'],
-        ['Support & Maintenance (Standard)', 'R 51,840 \u2013 R 77,760'],
-        ['Cloud Hosting', 'R 64,800 \u2013 R 108,000'],
-        ['Visitor Terminal License (1 gate)', 'R 3,000 \u2013 R 4,800'],
-        ['Total Annual Recurring', 'R 314,040 \u2013 R 471,360'],
+        ['Platform Licensing', 'Free'],
+        ['Support & Maintenance (Standard)', 'Free'],
+        ['Cloud Hosting', 'Free'],
+        ['Visitor Terminal License (1 gate)', 'Free'],
+        ['Total Annual Recurring', 'R 0'],
         ['', ''],
-        ['One-Time Setup (incl. hardware)', 'R 84,000 \u2013 R 145,000'],
+        ['One-Time Setup (incl. hardware)', 'At cost (hardware only)'],
         ['', ''],
-        ['Year 1 Total (all-in)', 'R 398,040 \u2013 R 616,360'],
+        ['Year 1 Total (all-in)', 'At cost (hardware only)'],
     ]
 )
 
 doc.add_paragraph(
-    'Year 1 all-in cost: approximately R 1,100 \u2013 R 1,700 per unit. Year 2 onwards: '
-    'approximately R 870 \u2013 R 1,310 per unit per year (recurring only).'
+    'Platform, support, and software licensing are provided at no cost. '
+    'The estate only pays for physical hardware at cost.'
 )
 
 doc.add_heading('20.5 Payment Terms', level=2)
-add_bullet(doc, 'One-time setup: 50% on contract signing, 50% on go-live')
-add_bullet(doc, 'Recurring licensing: monthly or annual invoicing (3% discount for annual prepayment)')
-add_bullet(doc, 'Standard payment terms: 30 days from invoice')
-add_bullet(doc, 'Minimum commitment: 12 months initial term, then month-to-month')
+add_bullet(doc, 'Hardware: at cost, paid directly to supplier')
+add_bullet(doc, 'Software platform, support, and hosting: complimentary')
 
 doc.add_page_break()
 

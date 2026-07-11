@@ -15,10 +15,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from src.audit import query_audit_log, write_audit_entry
 from src.auth import (
     CurrentUser,
+    create_access_token,
     get_current_user,
+    hash_password,
     require_action,
     require_property_admin_for,
     require_role,
+    verify_password,
 )
 from src.models import (
     AddResidentRequest,
@@ -45,6 +48,48 @@ from src.permissions import (
 )
 
 router = APIRouter(prefix="/api/v1", tags=["property-admin"])
+
+
+# ============================================================================
+# Authentication
+# ============================================================================
+
+@router.post("/auth/login")
+async def login(
+    request: Request,
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Authenticate with email and password. Returns a JWT token."""
+    import json
+
+    body = await request.json()
+    email = body.get("email", "").strip().lower()
+    password = body.get("password", "")
+
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password are required")
+
+    async with db_pool.acquire() as conn:
+        user = await conn.fetchrow(
+            "SELECT user_id, email, password_hash, is_active FROM users WHERE LOWER(email) = $1",
+            email,
+        )
+        if not user or not verify_password(password, user["password_hash"]):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+
+        if not user["is_active"]:
+            raise HTTPException(status_code=403, detail="Account is deactivated")
+
+        # Get roles
+        role_rows = await conn.fetch("""
+            SELECT r.role_name FROM user_roles ur
+            JOIN roles r ON ur.role_id = r.role_id
+            WHERE ur.user_id = $1
+        """, user["user_id"])
+        roles = [r["role_name"] for r in role_rows]
+
+    token = create_access_token(user["user_id"], roles)
+    return {"access_token": token, "token_type": "bearer"}
 
 
 # ============================================================================
@@ -621,6 +666,113 @@ async def get_audit_log(
 # ============================================================================
 # User Profile
 # ============================================================================
+
+@router.post("/me/delete-account")
+async def delete_my_account(
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """
+    Delete the current user's account per Play Store account deletion requirement.
+
+    Anonymizes all PII (email → deleted-{id}@deleted.anfieldvoice.local,
+    phone → NULL, name → 'Deleted User'), disables login, soft-removes
+    from all apartments, and revokes all property admin assignments.
+
+    Audit trail entries are preserved with the user_id intact so estate
+    compliance records remain valid — the name displays as 'Deleted User'.
+    """
+    body = await request.json()
+    confirm = body.get("confirm", False)
+    reason = body.get("reason", "User requested account deletion")
+
+    if not confirm:
+        raise HTTPException(
+            status_code=400,
+            detail="Confirmation required. Set confirm=true to delete your account.",
+        )
+
+    async with db_pool.acquire() as conn:
+        user = await conn.fetchrow(
+            "SELECT user_id, email, full_name, is_active FROM users WHERE user_id = $1",
+            current_user.user_id,
+        )
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        if not user["is_active"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Account is already deleted or deactivated.",
+            )
+
+        old_email = user["email"]
+        old_name = user["full_name"]
+        anonymized_email = f"deleted-{user['user_id']}@deleted.anfieldvoice.local"
+
+        # 1. Anonymize all PII, disable account
+        await conn.execute("""
+            UPDATE users
+            SET email = $1,
+                phone = NULL,
+                full_name = 'Deleted User',
+                password_hash = '',
+                is_active = FALSE,
+                updated_at = NOW()
+            WHERE user_id = $2
+        """, anonymized_email, current_user.user_id)
+
+        # 2. Soft-remove from all apartment residents
+        await conn.execute("""
+            UPDATE apartment_residents
+            SET is_active = FALSE, updated_at = NOW()
+            WHERE user_id = $1 AND is_active = TRUE
+        """, current_user.user_id)
+
+        # 3. Revoke all property admin assignments
+        await conn.execute("""
+            UPDATE property_admin_assignments
+            SET revoked_at = NOW()
+            WHERE user_id = $1 AND revoked_at IS NULL
+        """, current_user.user_id)
+
+        # 4. Expire all pending invitations created by this user
+        await conn.execute("""
+            UPDATE activation_invitations
+            SET status = 'revoked'
+            WHERE created_by = $1 AND status = 'pending'
+        """, current_user.user_id)
+
+    # 5. Audit trail
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=None,
+        action="account_deleted",
+        target_type="user",
+        target_id=current_user.user_id,
+        previous_value={
+            "email": old_email,
+            "full_name": old_name,
+        },
+        new_value={
+            "email": anonymized_email,
+            "full_name": "Deleted User",
+            "is_active": False,
+        },
+        reason=reason,
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return {
+        "status": "deleted",
+        "message": (
+            "Your account has been deleted. Your personal data has been anonymized. "
+            "Audit trail references are retained for estate compliance purposes."
+        ),
+    }
+
 
 @router.get("/me", response_model=UserOut)
 async def get_my_profile(

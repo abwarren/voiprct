@@ -94,7 +94,7 @@ Platform Components
 
 5. Product Features
 5.1 Resident Mobile Application
-A custom-branded application available on iOS and Android, built on the proven Linphone open-source telephony stack. The app provides:
+A custom-branded mobile application available on iOS and Android. The app provides:
 Visitor Ticketing — Create one-time or recurring visitor tickets with PIN generation
 Recurring Visitor Profiles — Save trusted visitors for rapid daily authorisation
 Delivery Management — Receive notifications, approve or redirect deliveries
@@ -306,7 +306,7 @@ AnfieldVoice is built on a modular, open-standards architecture that ensures rel
                             RESIDENT MOBILE APPS
         +-------------+  +-------------+  +-------------+
         |   iOS App   |  | Android App |  | Desktop App |
-        | (Linphone)  |  | (Linphone)  |  | (Linphone)  |
+        | (SIP SDK)   |  | (SIP SDK)   |  | (SIP SDK)   |
         +------+------+  +------+------+  +------+------+
                |                |                |
                +----------------+----------------+
@@ -508,7 +508,7 @@ SECURE  ◆  EFFICIENT  ◆  BUILT FOR ESTATES
 
 © 2026 AnfieldVoice. All rights reserved. Confidential.
 Layer | Technology | Purpose
-Mobile Apps | Custom-branded iOS & Android (Linphone core) | Resident & security communication
+Mobile Apps | Custom-branded iOS & Android | Resident & security communication
 SIP Proxy | Kamailio | Registration, routing, load balancing
 Media Server | FreeSWITCH | Voice & video call processing
 Database | PostgreSQL | Visitor records, audit trails, resident data
@@ -566,7 +566,7 @@ SIP Proxy | Kamailio 5.x | Industry-standard SIP proxy. Handles 10,000+ concurre
 Media Server | FreeSWITCH 1.10+ | Handles voice/video transcoding, conferencing, IVR.
 Database | PostgreSQL 16+ | ACID-compliant, mature, excellent replication and backup.
 API Server | FastAPI / Node.js | REST + WebSocket for apps, dashboards, integrations.
-Mobile Apps | Linphone SDK | Open-source SIP client. Customisable UI. iOS, Android, desktop.
+Mobile Apps | Custom SDK | Custom-branded mobile apps. iOS, Android, desktop.
 Visitor Terminal | PWA | Works on any modern browser. Deploy on ruggedised hardware.
 Dashboards | React / Vue.js SPA | Real-time web interfaces. Lightweight, low-spec friendly.
 Push Notifications | APNs + FCM | Apple and Google push for background call delivery.

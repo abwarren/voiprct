@@ -53,6 +53,8 @@ export interface PropertyAdminAssignment {
   is_resident: boolean;
   admin_type: 'Resident Property Administrator' | 'Non-Resident Property Administrator';
   assigned_at: string;
+  full_name?: string;
+  email?: string;
 }
 
 export interface UserPermissions {

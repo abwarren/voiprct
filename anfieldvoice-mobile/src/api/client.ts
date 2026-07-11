@@ -191,6 +191,10 @@ export function deactivateResident(apartmentId: number, userId: number): Promise
 // Property Admin Assignment
 // ============================================================================
 
+export function getPropertyAdmins(apartmentId: number): Promise<ApiResponse<PropertyAdminAssignment[]>> {
+  return request<PropertyAdminAssignment[]>('GET', `/api/v1/property-admins/${apartmentId}`);
+}
+
 export function assignPropertyAdmin(req: AssignPropertyAdminRequest): Promise<ApiResponse<Record<string, unknown>>> {
   return request<Record<string, unknown>>('POST', '/api/v1/property-admins', req);
 }

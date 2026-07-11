@@ -132,6 +132,8 @@ class PropertyAdminAssignmentOut(BaseModel):
     is_resident: bool
     admin_type: PropertyAdminType
     assigned_at: datetime
+    full_name: Optional[str] = None
+    email: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

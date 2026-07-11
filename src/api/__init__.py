@@ -549,6 +549,28 @@ async def assign_property_admin(
     }
 
 
+@router.get("/property-admins/{apartment_id}", response_model=list[PropertyAdminAssignmentOut])
+async def list_property_admins(
+    apartment_id: int,
+    current_user: CurrentUser = Depends(require_role(RoleName.BODY_CORP_ADMIN, RoleName.SUPER_ADMIN)),
+    db_pool=Depends(lambda request: request.app.state.db_pool),
+):
+    """List all property administrators for an apartment."""
+    import asyncpg
+
+    async with db_pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT
+                pa.assignment_id, pa.user_id, pa.apartment_id,
+                pa.is_resident, pa.assigned_at, pa.revoked_at,
+                u.full_name, u.email
+            FROM property_admin_assignments pa
+            JOIN users u ON pa.user_id = u.user_id
+            WHERE pa.apartment_id = $1 AND pa.revoked_at IS NULL
+        """, apartment_id)
+    return [dict(r) for r in rows]
+
+
 @router.delete("/property-admins/{apartment_id}/{user_id}")
 async def revoke_property_admin(
     apartment_id: int,

@@ -253,3 +253,49 @@ export function getGateCalls(apartmentId?: number, limit = 50, offset = 0): Prom
   params.set('offset', String(offset));
   return request<GateCall[]>('GET', `/api/v1/gate-calls?${params.toString()}`);
 }
+
+// ============================================================================
+// Visitor PIN Endpoints (Slice 3)
+// ============================================================================
+
+export function createVisitorPin(apartmentId: number, visitorName?: string, purpose?: string, expiresInHours = 24): Promise<ApiResponse<{ pin_code: string; pin_id: number; expires_at: string }>> {
+  return request<{ pin_code: string; pin_id: number; expires_at: string }>('POST', '/api/v1/visitor-pins', {
+    apartment_id: apartmentId,
+    visitor_name: visitorName || null,
+    purpose: purpose || null,
+    expires_in_hours: expiresInHours,
+  });
+}
+
+export function getVisitorPins(apartmentId: number, showExpired = false): Promise<ApiResponse<Array<{ pin_id: number; pin_code: string; visitor_name?: string; purpose?: string; expires_at: string; is_active: boolean; used_at?: string }>>> {
+  return request('GET', `/api/v1/visitor-pins/${apartmentId}?show_expired=${showExpired}`);
+}
+
+export function revokeVisitorPin(pinId: number): Promise<ApiResponse<{ status: string; pin_id: number }>> {
+  return request('DELETE', `/api/v1/visitor-pins/${pinId}`);
+}
+
+// ============================================================================
+// Expected Arrival Endpoints (Slice 3)
+// ============================================================================
+
+export function createExpectedArrival(apartmentId: number, visitorName: string, expectedAt: string, vehiclePlate?: string, notes?: string): Promise<ApiResponse<{ arrival_id: number; status: string }>> {
+  return request<{ arrival_id: number; status: string }>('POST', '/api/v1/arrivals', {
+    apartment_id: apartmentId,
+    visitor_name: visitorName,
+    vehicle_plate: vehiclePlate || null,
+    expected_at: expectedAt,
+    notes: notes || null,
+  });
+}
+
+export function getExpectedArrivals(apartmentId: number, statusFilter?: string): Promise<ApiResponse<Array<{ arrival_id: number; visitor_name: string; vehicle_plate?: string; expected_at: string; status: string; notes?: string }>>> {
+  const params = new URLSearchParams();
+  if (statusFilter) params.set('status_filter', statusFilter);
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  return request('GET', `/api/v1/arrivals/${apartmentId}${qs}`);
+}
+
+export function arrivalAction(arrivalId: number, action: 'arrive' | 'cancel'): Promise<ApiResponse<{ arrival_id: number; status: string }>> {
+  return request('POST', `/api/v1/arrivals/${arrivalId}/action`, { action });
+}

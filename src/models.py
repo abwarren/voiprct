@@ -305,3 +305,81 @@ class IceCandidate(BaseModel):
     candidate: str
     sdp_mid: Optional[str] = None
     sdp_mline_index: Optional[int] = None
+
+
+# ============================================================================
+# Visitor PINs (Slice 3)
+# ============================================================================
+
+
+class VisitorPinCreate(BaseModel):
+    """Create a new visitor PIN."""
+    apartment_id: int
+    visitor_name: Optional[str] = None
+    purpose: Optional[str] = None
+    expires_in_hours: int = 24
+
+
+class VisitorPinOut(BaseModel):
+    """Visitor PIN response."""
+    pin_id: int
+    apartment_id: int
+    created_by: int
+    pin_code: str
+    visitor_name: Optional[str] = None
+    purpose: Optional[str] = None
+    expires_at: datetime
+    used_at: Optional[datetime] = None
+    is_active: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class PinVerifyRequest(BaseModel):
+    """Security verifies a PIN at the gate."""
+    pin_code: str
+    gate_unit: str = "Main Gate"
+
+
+class PinVerifyResponse(BaseModel):
+    """PIN verification result."""
+    valid: bool
+    apartment_id: Optional[int] = None
+    visitor_name: Optional[str] = None
+    reason: Optional[str] = None
+
+
+# ============================================================================
+# Expected Arrivals (Slice 3)
+# ============================================================================
+
+
+class ExpectedArrivalCreate(BaseModel):
+    """Pre-register a visitor arrival."""
+    apartment_id: int
+    visitor_name: str
+    vehicle_plate: Optional[str] = None
+    expected_at: datetime
+    notes: Optional[str] = None
+
+
+class ExpectedArrivalOut(BaseModel):
+    """Expected arrival response."""
+    arrival_id: int
+    apartment_id: int
+    created_by: int
+    visitor_name: str
+    vehicle_plate: Optional[str] = None
+    expected_at: datetime
+    notes: Optional[str] = None
+    arrived_at: Optional[datetime] = None
+    status: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ArrivalAction(BaseModel):
+    """Mark an arrival as arrived or cancelled."""
+    action: str  # "arrive" or "cancel"

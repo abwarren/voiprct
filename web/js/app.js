@@ -33,6 +33,10 @@ const routes = {
     const { renderProfile } = await import('./views/profile.js');
     await renderProfile();
   },
+  '/visitors': async () => {
+    const { renderVisitors } = await import('./views/visitors.js');
+    await renderVisitors();
+  },
 };
 
 async function router() {

@@ -43,6 +43,13 @@ from src.models import (
     RoleName,
     UserOut,
     UserPermissions,
+    VisitorPinCreate,
+    VisitorPinOut,
+    PinVerifyRequest,
+    PinVerifyResponse,
+    ExpectedArrivalCreate,
+    ExpectedArrivalOut,
+    ArrivalAction,
 )
 from src.permissions import (
     Action as PermAction,
@@ -842,6 +849,252 @@ async def list_gate_calls(
             )
 
     return [dict(r) for r in rows]
+
+
+# ============================================================================
+# Visitor PINs (Slice 3)
+# ============================================================================
+
+
+@router.post("/visitor-pins", response_model=VisitorPinOut, status_code=status.HTTP_201_CREATED)
+async def create_visitor_pin(
+    body: VisitorPinCreate,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Generate a time-bound visitor PIN for gate access."""
+    import random
+
+    # Verify user is a resident of this apartment
+    async with db_pool.acquire() as conn:
+        is_resident = await conn.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM apartment_residents WHERE user_id = $1 AND apartment_id = $2 AND is_active = TRUE)",
+            current_user.user_id, body.apartment_id,
+        )
+        is_pa = await conn.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM property_admin_assignments WHERE user_id = $1 AND apartment_id = $2 AND revoked_at IS NULL)",
+            current_user.user_id, body.apartment_id,
+        )
+        is_body_corp = await conn.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM user_roles ur JOIN roles r ON ur.role_id = r.role_id WHERE ur.user_id = $1 AND r.role_name IN ('body_corp_admin', 'super_admin'))",
+            current_user.user_id,
+        )
+        if not (is_resident or is_pa or is_body_corp):
+            raise HTTPException(status_code=403, detail="You are not associated with this apartment")
+
+        # Generate 6-digit PIN
+        pin_code = str(random.randint(100000, 999999))
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=body.expires_in_hours)
+
+        pin = await conn.fetchrow("""
+            INSERT INTO visitor_pins (apartment_id, created_by, pin_code, visitor_name, purpose, expires_at)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING pin_id, apartment_id, created_by, pin_code, visitor_name, purpose, expires_at, used_at, is_active, created_at
+        """, body.apartment_id, current_user.user_id, pin_code, body.visitor_name, body.purpose, expires_at)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=body.apartment_id,
+        action="visitor_pin_created",
+        target_type="visitor_pin",
+        target_id=pin["pin_id"],
+        new_value={"visitor_name": body.visitor_name, "expires_in_hours": body.expires_in_hours},
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return dict(pin)
+
+
+@router.get("/visitor-pins/{apartment_id}", response_model=list[VisitorPinOut])
+async def list_visitor_pins(
+    apartment_id: int,
+    show_expired: bool = Query(False),
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda request: request.app.state.db_pool),
+):
+    """List visitor PINs for an apartment."""
+    async with db_pool.acquire() as conn:
+        if show_expired:
+            rows = await conn.fetch(
+                "SELECT pin_id, apartment_id, created_by, pin_code, visitor_name, purpose, expires_at, used_at, is_active, created_at "
+                "FROM visitor_pins WHERE apartment_id = $1 ORDER BY created_at DESC LIMIT 50",
+                apartment_id,
+            )
+        else:
+            rows = await conn.fetch(
+                "SELECT pin_id, apartment_id, created_by, pin_code, visitor_name, purpose, expires_at, used_at, is_active, created_at "
+                "FROM visitor_pins WHERE apartment_id = $1 AND is_active = TRUE AND expires_at > NOW() ORDER BY created_at DESC",
+                apartment_id,
+            )
+    return [dict(r) for r in rows]
+
+
+@router.post("/visitor-pins/verify", response_model=PinVerifyResponse)
+async def verify_visitor_pin(
+    body: PinVerifyRequest,
+    request: Request,
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Security/terminal verifies a visitor PIN at the gate."""
+    async with db_pool.acquire() as conn:
+        pin = await conn.fetchrow(
+            "SELECT * FROM visitor_pins WHERE pin_code = $1 AND is_active = TRUE",
+            body.pin_code,
+        )
+        if not pin:
+            return PinVerifyResponse(valid=False, reason="Invalid or inactive PIN")
+
+        if pin["expires_at"] < datetime.now(timezone.utc):
+            await conn.execute(
+                "UPDATE visitor_pins SET is_active = FALSE WHERE pin_id = $1",
+                pin["pin_id"],
+            )
+            return PinVerifyResponse(valid=False, reason="PIN has expired")
+
+        # Mark as used
+        await conn.execute(
+            "UPDATE visitor_pins SET used_at = NOW() WHERE pin_id = $1",
+            pin["pin_id"],
+        )
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=0,
+        apartment_id=pin["apartment_id"],
+        action="visitor_pin_verified",
+        target_type="visitor_pin",
+        target_id=pin["pin_id"],
+        new_value={"gate_unit": body.gate_unit, "visitor_name": pin["visitor_name"]},
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return PinVerifyResponse(
+        valid=True,
+        apartment_id=pin["apartment_id"],
+        visitor_name=pin["visitor_name"],
+        reason="Access granted",
+    )
+
+
+@router.delete("/visitor-pins/{pin_id}")
+async def revoke_visitor_pin(
+    pin_id: int,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Revoke a visitor PIN before it expires."""
+    async with db_pool.acquire() as conn:
+        await conn.execute(
+            "UPDATE visitor_pins SET is_active = FALSE WHERE pin_id = $1",
+            pin_id,
+        )
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=None,
+        action="visitor_pin_revoked",
+        target_type="visitor_pin",
+        target_id=pin_id,
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return {"status": "revoked", "pin_id": pin_id}
+
+
+# ============================================================================
+# Expected Arrivals (Slice 3)
+# ============================================================================
+
+
+@router.post("/arrivals", response_model=ExpectedArrivalOut, status_code=status.HTTP_201_CREATED)
+async def create_expected_arrival(
+    body: ExpectedArrivalCreate,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Pre-register a visitor arrival for gate notification."""
+    async with db_pool.acquire() as conn:
+        is_resident = await conn.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM apartment_residents WHERE user_id = $1 AND apartment_id = $2 AND is_active = TRUE)",
+            current_user.user_id, body.apartment_id,
+        )
+        if not is_resident:
+            raise HTTPException(status_code=403, detail="You are not a resident of this apartment")
+
+        arrival = await conn.fetchrow("""
+            INSERT INTO expected_arrivals (apartment_id, created_by, visitor_name, vehicle_plate, expected_at, notes)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *
+        """, body.apartment_id, current_user.user_id, body.visitor_name,
+            body.vehicle_plate, body.expected_at, body.notes)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=body.apartment_id,
+        action="expected_arrival_created",
+        target_type="expected_arrival",
+        target_id=arrival["arrival_id"],
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return dict(arrival)
+
+
+@router.get("/arrivals/{apartment_id}", response_model=list[ExpectedArrivalOut])
+async def list_expected_arrivals(
+    apartment_id: int,
+    status_filter: Optional[str] = Query(None),
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda request: request.app.state.db_pool),
+):
+    """List expected arrivals for an apartment."""
+    async with db_pool.acquire() as conn:
+        if status_filter:
+            rows = await conn.fetch(
+                "SELECT * FROM expected_arrivals WHERE apartment_id = $1 AND status = $2 ORDER BY expected_at DESC LIMIT 50",
+                apartment_id, status_filter,
+            )
+        else:
+            rows = await conn.fetch(
+                "SELECT * FROM expected_arrivals WHERE apartment_id = $1 ORDER BY expected_at DESC LIMIT 50",
+                apartment_id,
+            )
+    return [dict(r) for r in rows]
+
+
+@router.post("/arrivals/{arrival_id}/action")
+async def arrival_action(
+    arrival_id: int,
+    body: ArrivalAction,
+    request: Request,
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Security marks an arrival as arrived, or resident cancels."""
+    if body.action not in ("arrive", "cancel"):
+        raise HTTPException(status_code=400, detail="Action must be 'arrive' or 'cancel'")
+
+    new_status = "arrived" if body.action == "arrive" else "cancelled"
+    update_field = "arrived_at = NOW()" if body.action == "arrive" else ""
+
+    async with db_pool.acquire() as conn:
+        if body.action == "arrive":
+            await conn.execute(
+                "UPDATE expected_arrivals SET status = $1, arrived_at = NOW() WHERE arrival_id = $2",
+                new_status, arrival_id,
+            )
+        else:
+            await conn.execute(
+                "UPDATE expected_arrivals SET status = $1 WHERE arrival_id = $2",
+                new_status, arrival_id,
+            )
+
+    return {"arrival_id": arrival_id, "status": new_status}
 
 
 # ============================================================================

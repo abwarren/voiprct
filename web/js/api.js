@@ -89,3 +89,19 @@ export function escHtml(str) {
   d.textContent = str;
   return d.innerHTML;
 }
+
+// ── Visitor PINs ──
+export const createVisitorPin = (data) => apiPost('/api/v1/visitor-pins', data);
+export const getVisitorPins = (aptId, showExpired) => apiGet(`/api/v1/visitor-pins/${aptId}?show_expired=${showExpired || false}`);
+export const verifyVisitorPin = (pinCode, gateUnit) => apiPost('/api/v1/visitor-pins/verify', { pin_code: pinCode, gate_unit: gateUnit || 'Main Gate' });
+export const revokeVisitorPin = (pinId) => apiDelete(`/api/v1/visitor-pins/${pinId}`);
+
+// ── Expected Arrivals ──
+export const createExpectedArrival = (data) => apiPost('/api/v1/arrivals', data);
+export const getExpectedArrivals = (aptId, statusFilter) => {
+  const p = new URLSearchParams();
+  if (statusFilter) p.set('status_filter', statusFilter);
+  const qs = p.toString() ? `?${p}` : '';
+  return apiGet(`/api/v1/arrivals/${aptId}${qs}`);
+};
+export const arrivalAction = (arrivalId, action) => apiPost(`/api/v1/arrivals/${arrivalId}/action`, { action });

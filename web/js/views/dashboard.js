@@ -83,6 +83,7 @@ function layout(body) {
   const links = [
     { hash: '#/', label: 'Dashboard', icon: '🏠' },
     ...(isResident || roles.includes('property_admin') ? [{ hash: '#/gate', label: 'Gate', icon: '📞' }] : []),
+    ...(isResident || isManager ? [{ hash: '#/visitors', label: 'Visitors', icon: '🔑' }] : []),
     ...(isManager ? [{ hash: '#/tenants', label: 'Tenants', icon: '👥' }] : []),
     ...(isBodyCorp ? [{ hash: '#/estate', label: 'Estate', icon: '🏢' }] : []),
     { hash: '#/profile', label: 'Profile', icon: '👤' },

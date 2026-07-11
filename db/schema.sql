@@ -256,3 +256,48 @@ COMMENT ON TABLE gate_calls IS 'Real-time gate call records for WebRTC/SIP inter
 CREATE INDEX IF NOT EXISTS idx_gate_calls_apartment ON gate_calls (apartment_id, call_status)
     WHERE call_status = 'ringing';
 CREATE INDEX IF NOT EXISTS idx_gate_calls_history ON gate_calls (apartment_id, created_at DESC);
+
+-- ============================================================================
+-- Visitor PINs (Slice 3)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS visitor_pins (
+    pin_id          SERIAL PRIMARY KEY,
+    apartment_id    INT NOT NULL REFERENCES apartments(apartment_id),
+    created_by      INT NOT NULL REFERENCES users(user_id),
+    pin_code        VARCHAR(6) NOT NULL,
+    visitor_name    VARCHAR(255),
+    purpose         VARCHAR(255),
+    expires_at      TIMESTAMPTZ NOT NULL,
+    used_at         TIMESTAMPTZ,
+    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE visitor_pins IS 'Time-bound visitor PINs for gate access.';
+
+CREATE INDEX IF NOT EXISTS idx_visitor_pins_code ON visitor_pins (pin_code) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_visitor_pins_apartment ON visitor_pins (apartment_id);
+
+-- ============================================================================
+-- Expected Arrivals (Slice 3)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS expected_arrivals (
+    arrival_id      SERIAL PRIMARY KEY,
+    apartment_id    INT NOT NULL REFERENCES apartments(apartment_id),
+    created_by      INT NOT NULL REFERENCES users(user_id),
+    visitor_name    VARCHAR(255) NOT NULL,
+    vehicle_plate   VARCHAR(20),
+    expected_at     TIMESTAMPTZ NOT NULL,
+    notes           TEXT,
+    arrived_at      TIMESTAMPTZ,
+    status          VARCHAR(20) NOT NULL DEFAULT 'scheduled'
+                    CHECK (status IN ('scheduled', 'arrived', 'cancelled', 'expired')),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE expected_arrivals IS 'Pre-registered visitor arrivals for security notification.';
+
+CREATE INDEX IF NOT EXISTS idx_arrivals_apartment ON expected_arrivals (apartment_id, status);
+CREATE INDEX IF NOT EXISTS idx_arrivals_expected ON expected_arrivals (expected_at) WHERE status = 'scheduled';

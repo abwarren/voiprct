@@ -31,6 +31,9 @@ from src.models import (
     AuditLogEntry,
     AuditQuery,
     CreateInvitationRequest,
+    GateCallAction,
+    GateCallCreate,
+    GateCallOut,
     InvitationOut,
     PermissionCheck,
     PropertyAdminAssignmentOut,
@@ -661,6 +664,184 @@ async def get_audit_log(
         offset=offset,
     )
     return entries
+
+
+# ============================================================================
+# Gate Calls (Slice 1 — WebSocket Signalling)
+# ============================================================================
+
+
+@router.post("/gate-calls", response_model=GateCallOut, status_code=status.HTTP_201_CREATED)
+async def initiate_gate_call(
+    body: GateCallCreate,
+    request: Request,
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Gate/intercom hardware initiates a call to an apartment.
+
+    This is typically called by the gate terminal (Asterisk, Fanvil, Htek, etc.)
+    when someone presses the call button at the entrance.
+    """
+    import asyncpg
+
+    # Verify apartment exists and is active
+    async with db_pool.acquire() as conn:
+        apt = await conn.fetchval(
+            "SELECT apartment_id FROM apartments WHERE apartment_id = $1 AND is_active = TRUE",
+            body.apartment_id,
+        )
+        if not apt:
+            raise HTTPException(status_code=404, detail="Apartment not found")
+
+        call = await conn.fetchrow("""
+            INSERT INTO gate_calls (apartment_id, caller_unit)
+            VALUES ($1, $2)
+            RETURNING call_id, apartment_id, caller_unit, call_status,
+                      started_at, answered_at, ended_at, duration_secs
+        """, body.apartment_id, body.caller_unit)
+
+    # Notify connected residents via WebSocket
+    from src.ws import send_to_apartment
+
+    reached = await send_to_apartment(body.apartment_id, {
+        "type": "incoming_call",
+        "call_id": call["call_id"],
+        "apartment_id": body.apartment_id,
+        "caller_unit": body.caller_unit,
+        "started_at": call["started_at"].isoformat(),
+    })
+
+    # Audit
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=0,  # System-initiated (gate hardware)
+        apartment_id=body.apartment_id,
+        action="gate_call_initiated",
+        target_type="gate_call",
+        target_id=call["call_id"],
+        new_value={"caller_unit": body.caller_unit, "reached_residents": len(reached)},
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return dict(call)
+
+
+@router.post("/gate-calls/{call_id}/action")
+async def gate_call_action(
+    call_id: int,
+    body: GateCallAction,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Answer or reject a gate call. Used when WebSocket is not available (REST fallback).
+
+    The user must be an active resident of the apartment the call is ringing for.
+    """
+    import asyncpg
+
+    if body.action not in ("answer", "reject"):
+        raise HTTPException(status_code=400, detail="Action must be 'answer' or 'reject'")
+
+    new_status = "answered" if body.action == "answer" else "rejected"
+
+    async with db_pool.acquire() as conn:
+        call = await conn.fetchrow(
+            "SELECT * FROM gate_calls WHERE call_id = $1 AND call_status = 'ringing'",
+            call_id,
+        )
+        if not call:
+            raise HTTPException(status_code=404, detail="Call not found or no longer active")
+
+        # Verify user is a resident
+        is_resident = await conn.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM apartment_residents WHERE user_id = $1 AND apartment_id = $2 AND is_active = TRUE)",
+            current_user.user_id, call["apartment_id"],
+        )
+        if not is_resident:
+            raise HTTPException(status_code=403, detail="You are not a resident of this apartment")
+
+        if body.action == "answer":
+            await conn.execute(
+                "UPDATE gate_calls SET call_status = $1, answered_at = NOW() WHERE call_id = $2",
+                new_status, call_id,
+            )
+        else:
+            await conn.execute(
+                "UPDATE gate_calls SET call_status = $1, ended_at = NOW() WHERE call_id = $2",
+                new_status, call_id,
+            )
+
+    # Notify apartment via WS
+    from src.ws import send_to_apartment
+
+    await send_to_apartment(call["apartment_id"], {
+        "type": "call_updated",
+        "call_id": call_id,
+        "call_status": new_status,
+    })
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=call["apartment_id"],
+        action=f"gate_call_{body.action}ed",
+        target_type="gate_call",
+        target_id=call_id,
+        ip_address=request.client.host if request.client else None,
+    )
+
+    return {"call_id": call_id, "status": new_status}
+
+
+@router.get("/gate-calls", response_model=list[GateCallOut])
+async def list_gate_calls(
+    apartment_id: Optional[int] = Query(None),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda request: request.app.state.db_pool),
+):
+    """List gate call history. Residents see their apartment's calls.
+    Property admins see assigned apartments. Body corp sees all.
+    """
+    from src.permissions import get_user_roles, get_managed_apartments
+
+    roles = await get_user_roles(db_pool, current_user.user_id)
+    is_body_corp = "body_corp_admin" in roles or "super_admin" in roles
+
+    async with db_pool.acquire() as conn:
+        if apartment_id:
+            # Specific apartment — check access
+            if not is_body_corp and apartment_id not in await get_managed_apartments(db_pool, current_user.user_id):
+                # Check if user is a resident
+                is_res = await conn.fetchval(
+                    "SELECT EXISTS(SELECT 1 FROM apartment_residents WHERE user_id = $1 AND apartment_id = $2 AND is_active = TRUE)",
+                    current_user.user_id, apartment_id,
+                )
+                if not is_res:
+                    raise HTTPException(status_code=403, detail="Access denied")
+            rows = await conn.fetch(
+                "SELECT call_id, apartment_id, caller_unit, call_status, started_at, answered_at, ended_at, duration_secs "
+                "FROM gate_calls WHERE apartment_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+                apartment_id, limit, offset,
+            )
+        elif is_body_corp:
+            rows = await conn.fetch(
+                "SELECT call_id, apartment_id, caller_unit, call_status, started_at, answered_at, ended_at, duration_secs "
+                "FROM gate_calls ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+                limit, offset,
+            )
+        else:
+            # Resident sees their own apartment's calls
+            managed = await get_managed_apartments(db_pool, current_user.user_id)
+            rows = await conn.fetch(
+                "SELECT call_id, apartment_id, caller_unit, call_status, started_at, answered_at, ended_at, duration_secs "
+                "FROM gate_calls WHERE apartment_id = ANY($1) ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+                managed or [0], limit, offset,
+            )
+
+    return [dict(r) for r in rows]
 
 
 # ============================================================================

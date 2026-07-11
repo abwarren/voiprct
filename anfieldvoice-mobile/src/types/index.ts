@@ -128,3 +128,40 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
+
+// ============================================================================
+// Gate Calls (Slice 1 — WebSocket Signalling)
+// ============================================================================
+
+export interface GateCall {
+  call_id: number;
+  apartment_id: number;
+  caller_unit: string;
+  call_status: 'ringing' | 'answered' | 'missed' | 'rejected' | 'completed';
+  started_at: string;
+  answered_at?: string;
+  ended_at?: string;
+  duration_secs?: number;
+}
+
+export interface WsIncomingCall {
+  type: 'incoming_call';
+  call_id: number;
+  apartment_id: number;
+  caller_unit: string;
+  started_at: string;
+}
+
+export interface WsCallUpdated {
+  type: 'call_updated';
+  call_id: number;
+  call_status: string;
+}
+
+export interface WsConnected {
+  type: 'connected';
+  user_id: number;
+  apartment_ids: number[];
+}
+
+export type WsMessage = WsIncomingCall | WsCallUpdated | WsConnected;

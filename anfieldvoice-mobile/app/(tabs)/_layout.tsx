@@ -41,7 +41,22 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Residents — only property admins and body corp see this */}
+      {/* Gate — residents & security */}
+      {(isResident || isPropertyAdmin) && (
+        <Tabs.Screen
+          name="gate"
+          options={{
+            title: 'Gate',
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="call" size={size} color={color} />
+            ),
+            tabBarBadge: undefined,
+          }}
+        />
+      )}
+
+      {/* Residents — only property admins and body corp */}
       {(isPropertyAdmin || isBodyCorp) && (
         <Tabs.Screen
           name="residents"

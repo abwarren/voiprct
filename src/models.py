@@ -236,3 +236,45 @@ class UserPermissions(BaseModel):
     is_resident: bool = False
     is_property_admin: bool = False
     admin_type: Optional[PropertyAdminType] = None
+
+
+# ============================================================================
+# Gate Calls (Slice 1 — WebSocket Signalling)
+# ============================================================================
+
+
+class GateCallOut(BaseModel):
+    """Outbound model for gate call records."""
+    call_id: int
+    apartment_id: int
+    caller_unit: str
+    call_status: str
+    started_at: datetime
+    answered_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
+    duration_secs: Optional[int] = None
+
+    model_config = {"from_attributes": True}
+
+
+class GateCallCreate(BaseModel):
+    """A gate/intercom hardware initiates a call to an apartment."""
+    apartment_id: int
+    caller_unit: str = "Main Gate"
+
+
+class GateCallAnswer(BaseModel):
+    """Resident answers or rejects a gate call."""
+    action: str  # "answer" or "reject"
+
+
+class GateCallAction(BaseModel):
+    """REST fallback action for a gate call."""
+    action: str  # "answer" or "reject"
+
+
+class GateCallHistory(BaseModel):
+    """Filter for call history queries."""
+    apartment_id: Optional[int] = None
+    limit: int = 50
+    offset: int = 0

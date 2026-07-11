@@ -14,6 +14,7 @@ import type {
   AssignPropertyAdminRequest,
   Invitation,
   AuditEntry,
+  GateCall,
 } from '../types';
 
 // Change this to your production API URL
@@ -224,4 +225,31 @@ export function getAuditLog(apartmentId: number): Promise<ApiResponse<AuditEntry
 
 export function healthCheck(): Promise<ApiResponse<Record<string, unknown>>> {
   return request<Record<string, unknown>>('GET', '/health', undefined, false);
+}
+
+// ============================================================================
+// Gate Call Endpoints (Slice 1 — WebSocket Signalling)
+// ============================================================================
+
+export function initiateGateCall(apartmentId: number, callerUnit?: string): Promise<ApiResponse<GateCall>> {
+  return request<GateCall>('POST', '/api/v1/gate-calls', {
+    apartment_id: apartmentId,
+    caller_unit: callerUnit || 'Main Gate',
+  });
+}
+
+export function gateCallAction(callId: number, action: 'answer' | 'reject'): Promise<ApiResponse<{ call_id: number; status: string }>> {
+  return request<{ call_id: number; status: string }>(
+    'POST',
+    `/api/v1/gate-calls/${callId}/action`,
+    { action },
+  );
+}
+
+export function getGateCalls(apartmentId?: number, limit = 50, offset = 0): Promise<ApiResponse<GateCall[]>> {
+  const params = new URLSearchParams();
+  if (apartmentId) params.set('apartment_id', String(apartmentId));
+  params.set('limit', String(limit));
+  params.set('offset', String(offset));
+  return request<GateCall[]>('GET', `/api/v1/gate-calls?${params.toString()}`);
 }

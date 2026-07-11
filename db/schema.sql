@@ -231,3 +231,28 @@ INSERT INTO roles (role_name, description) VALUES
     ('maintenance',             'Estate maintenance staff. Manages work orders and facility access.'),
     ('body_corp_admin',         'Body corporate administrator. Estate-wide configuration, analytics, resident management.'),
     ('super_admin',             'Platform super administrator. Full system access.');
+
+-- ============================================================================
+-- Gate Calls (Slice 1 — WebSocket Signalling)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS gate_calls (
+    call_id         SERIAL PRIMARY KEY,
+    apartment_id    INT NOT NULL REFERENCES apartments(apartment_id),
+    caller_unit     VARCHAR(50) NOT NULL,
+    call_status     VARCHAR(20) NOT NULL DEFAULT 'ringing'
+                    CHECK (call_status IN ('ringing', 'answered', 'missed', 'rejected', 'completed')),
+    started_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    answered_at     TIMESTAMPTZ,
+    ended_at        TIMESTAMPTZ,
+    duration_secs   INT,
+    sdp_offer       TEXT,
+    sdp_answer      TEXT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE gate_calls IS 'Real-time gate call records for WebRTC/SIP intercom.';
+
+CREATE INDEX IF NOT EXISTS idx_gate_calls_apartment ON gate_calls (apartment_id, call_status)
+    WHERE call_status = 'ringing';
+CREATE INDEX IF NOT EXISTS idx_gate_calls_history ON gate_calls (apartment_id, created_at DESC);

@@ -78,21 +78,21 @@ export default function HomeScreen() {
               label="Gate Call"
               desc="Answer the gate"
               color={Colors.roleSecurity}
-              onPress={() => {}}
+              onPress={() => router.push('/(tabs)/gate')}
             />
             <QuickActionCard
               icon="key"
               label="Visitor PIN"
               desc="Generate a PIN"
               color={Colors.rolePropertyAdmin}
-              onPress={() => {}}
+              onPress={() => router.push('/(tabs)/gate')}
             />
             <QuickActionCard
               icon="calendar"
               label="Expected"
               desc="Schedule arrival"
               color={Colors.success}
-              onPress={() => {}}
+              onPress={() => router.push('/(tabs)/gate')}
             />
             <QuickActionCard
               icon="people"

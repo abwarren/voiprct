@@ -7,13 +7,14 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from src.api import router
 from src.config import settings
 from src.database import create_pool, init_db
+from src.ws import ws_handler
 
 
 @asynccontextmanager
@@ -42,6 +43,15 @@ app.add_middleware(
 )
 
 app.include_router(router)
+
+
+# ── WebSocket Gateway ───────────────────────────────────────────────────────
+
+
+@app.websocket("/ws")
+async def websocket_gateway(ws: WebSocket):
+    """Real-time signalling gateway for gate calls."""
+    await ws_handler(ws, ws.app.state.db_pool)
 
 
 @app.get("/health")

@@ -109,6 +109,33 @@ export default function ResidentsScreen() {
     );
   }
 
+  async function handleToggleStatus(resident: Resident) {
+    if (!selectedApt) return;
+    const action = resident.is_active ? 'deactivate' : 'activate';
+    const label = resident.is_active ? 'Suspend' : 'Activate';
+    Alert.alert(
+      `${label} Resident`,
+      `${label} ${resident.full_name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: label,
+          style: resident.is_active ? 'destructive' : 'default',
+          onPress: async () => {
+            const result = resident.is_active
+              ? await api.deactivateResident(selectedApt, resident.user_id)
+              : await api.activateResident(selectedApt, resident.user_id);
+            if (result.error) {
+              Alert.alert('Error', result.error);
+            } else {
+              loadResidents();
+            }
+          },
+        },
+      ]
+    );
+  }
+
   const selectedAptInfo = apartments.find(a => a.apartment_id === selectedApt);
 
   return (
@@ -181,12 +208,24 @@ export default function ResidentsScreen() {
                     </Text>
                   </View>
                 </View>
-                <TouchableOpacity
-                  style={styles.removeBtn}
-                  onPress={() => handleRemoveResident(resident)}
-                >
-                  <Ionicons name="close-circle-outline" size={24} color={Colors.error} />
-                </TouchableOpacity>
+                <View style={styles.residentActions}>
+                  <TouchableOpacity
+                    style={[styles.actionBtn, { backgroundColor: resident.is_active ? Colors.warning + '20' : Colors.success + '20' }]}
+                    onPress={() => handleToggleStatus(resident)}
+                  >
+                    <Ionicons
+                      name={resident.is_active ? 'pause-circle-outline' : 'play-circle-outline'}
+                      size={22}
+                      color={resident.is_active ? Colors.warning : Colors.success}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.actionBtn}
+                    onPress={() => handleRemoveResident(resident)}
+                  >
+                    <Ionicons name="close-circle-outline" size={22} color={Colors.error} />
+                  </TouchableOpacity>
+                </View>
               </View>
             </Card>
           ))
@@ -377,6 +416,18 @@ const styles = StyleSheet.create({
   },
   removeBtn: {
     padding: Spacing.sm,
+  },
+  residentActions: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    alignItems: 'center',
+  },
+  actionBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   addButton: {
     marginTop: Spacing.lg,

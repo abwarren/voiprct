@@ -56,6 +56,20 @@ export default function TabLayout() {
         />
       )}
 
+      {/* Visitors — residents & property admins */}
+      {(isResident || isPropertyAdmin) && (
+        <Tabs.Screen
+          name="visitors"
+          options={{
+            title: 'Visitors',
+            headerTitle: 'Visitors & Arrivals',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="key" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
+
       {/* Residents — only property admins and body corp */}
       {(isPropertyAdmin || isBodyCorp) && (
         <Tabs.Screen

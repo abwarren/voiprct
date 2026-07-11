@@ -3,7 +3,7 @@
 // Role-based home screen showing relevant quick actions
 // ============================================================================
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import { useAuth } from '../../src/contexts/AuthContext';
 import { Colors, Spacing, FontSize, BorderRadius } from '../../src/theme';
 import { Card } from '../../src/components/Card';
 import { RoleBadgeList } from '../../src/components/RoleBadge';
+import VisitorPinModal from '../../src/components/VisitorPinModal';
+import ExpectedArrivalModal from '../../src/components/ExpectedArrivalModal';
 import * as api from '../../src/api/client';
 import type { Apartment } from '../../src/types';
 
@@ -27,13 +29,17 @@ export default function HomeScreen() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [showArrivalModal, setShowArrivalModal] = useState(false);
 
   const isResident = roles.includes('resident');
   const isPropertyAdmin = roles.includes('property_admin');
   const isBodyCorp = roles.includes('body_corp_admin') || roles.includes('super_admin');
 
+  const firstAptId = apartments.length > 0 ? apartments[0].apartment_id : 0;
+
   const loadApartments = useCallback(async () => {
-    if (!isPropertyAdmin && !isBodyCorp) return;
+    if (!isPropertyAdmin && !isBodyCorp && !isResident) return;
     const result = await api.getMyApartments();
     if (result.data) {
       setApartments(result.data);
@@ -41,7 +47,7 @@ export default function HomeScreen() {
     } else if (result.status !== 401) {
       setError('Could not load apartments');
     }
-  }, [isPropertyAdmin, isBodyCorp]);
+  }, [isPropertyAdmin, isBodyCorp, isResident]);
 
   useFocusEffect(
     useCallback(() => {
@@ -85,14 +91,14 @@ export default function HomeScreen() {
               label="Visitor PIN"
               desc="Generate a PIN"
               color={Colors.rolePropertyAdmin}
-              onPress={() => router.push('/(tabs)/gate')}
+              onPress={() => firstAptId ? setShowPinModal(true) : null}
             />
             <QuickActionCard
               icon="calendar"
               label="Expected"
               desc="Schedule arrival"
               color={Colors.success}
-              onPress={() => router.push('/(tabs)/gate')}
+              onPress={() => firstAptId ? setShowArrivalModal(true) : null}
             />
             <QuickActionCard
               icon="people"
@@ -162,6 +168,18 @@ export default function HomeScreen() {
       </TouchableOpacity>
 
       <View style={styles.bottomSpacer} />
+
+      {/* Modals */}
+      <VisitorPinModal
+        visible={showPinModal}
+        apartmentId={firstAptId}
+        onClose={() => setShowPinModal(false)}
+      />
+      <ExpectedArrivalModal
+        visible={showArrivalModal}
+        apartmentId={firstAptId}
+        onClose={() => setShowArrivalModal(false)}
+      />
     </ScrollView>
   );
 }

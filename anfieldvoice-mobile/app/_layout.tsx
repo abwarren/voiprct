@@ -7,7 +7,13 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
+import { usePushNotifications } from '../src/hooks/usePushNotifications';
 import { Colors } from '../src/theme';
+
+function PushInit() {
+  usePushNotifications();
+  return null;
+}
 
 function RootLayoutNavigator() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -21,13 +27,16 @@ function RootLayoutNavigator() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      ) : (
-        <Stack.Screen name="login" options={{ animation: 'fade' }} />
-      )}
-    </Stack>
+    <>
+      {isAuthenticated && <PushInit />}
+      <Stack screenOptions={{ headerShown: false }}>
+        {isAuthenticated ? (
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="login" options={{ animation: 'fade' }} />
+        )}
+      </Stack>
+    </>
   );
 }
 

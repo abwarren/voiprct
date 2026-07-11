@@ -303,3 +303,19 @@ export function getExpectedArrivals(apartmentId: number, statusFilter?: string):
 export function arrivalAction(arrivalId: number, action: 'arrive' | 'cancel'): Promise<ApiResponse<{ arrival_id: number; status: string }>> {
   return request('POST', `/api/v1/arrivals/${arrivalId}/action`, { action });
 }
+
+// ============================================================================
+// Push Notification Token Endpoints (Slice 6)
+// ============================================================================
+
+export function registerPushToken(platform: 'ios' | 'android', token: string): Promise<ApiResponse<{ token_id: number; platform: string; token: string; is_active: boolean }>> {
+  return request('POST', '/api/v1/push-tokens', { platform, token });
+}
+
+export function getPushTokens(): Promise<ApiResponse<Array<{ token_id: number; platform: string; token: string; is_active: boolean }>>> {
+  return request('GET', '/api/v1/push-tokens');
+}
+
+export function removePushToken(tokenId: number): Promise<ApiResponse<{ status: string }>> {
+  return request('DELETE', `/api/v1/push-tokens/${tokenId}`);
+}

@@ -50,6 +50,8 @@ from src.models import (
     ExpectedArrivalCreate,
     ExpectedArrivalOut,
     ArrivalAction,
+    PushTokenCreate,
+    PushTokenOut,
 )
 from src.permissions import (
     Action as PermAction,
@@ -1117,6 +1119,63 @@ async def arrival_action(
             )
 
     return {"arrival_id": arrival_id, "status": new_status}
+
+
+# ============================================================================
+# Push Notifications (Slice 6)
+# ============================================================================
+
+
+@router.post("/push-tokens", response_model=PushTokenOut, status_code=status.HTTP_201_CREATED)
+async def register_push_token(
+    body: PushTokenCreate,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Register an Expo push notification token for the current user."""
+    if body.platform not in ("ios", "android"):
+        raise HTTPException(status_code=400, detail="Platform must be 'ios' or 'android'")
+
+    async with db_pool.acquire() as conn:
+        # Upsert token
+        token = await conn.fetchrow("""
+            INSERT INTO push_tokens (user_id, platform, token)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (user_id, platform, token)
+            DO UPDATE SET is_active = TRUE, updated_at = NOW()
+            RETURNING token_id, platform, token, is_active, created_at
+        """, current_user.user_id, body.platform, body.token)
+
+    return dict(token)
+
+
+@router.get("/push-tokens", response_model=list[PushTokenOut])
+async def list_push_tokens(
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """List the current user's registered push tokens."""
+    async with db_pool.acquire() as conn:
+        rows = await conn.fetch(
+            "SELECT token_id, platform, token, is_active, created_at FROM push_tokens WHERE user_id = $1 ORDER BY created_at DESC",
+            current_user.user_id,
+        )
+    return [dict(r) for r in rows]
+
+
+@router.delete("/push-tokens/{token_id}")
+async def remove_push_token(
+    token_id: int,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Deactivate a push token (e.g. on logout)."""
+    async with db_pool.acquire() as conn:
+        await conn.execute(
+            "UPDATE push_tokens SET is_active = FALSE WHERE token_id = $1 AND user_id = $2",
+            token_id, current_user.user_id,
+        )
+    return {"status": "removed"}
 
 
 # ============================================================================

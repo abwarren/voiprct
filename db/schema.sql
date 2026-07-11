@@ -301,3 +301,22 @@ COMMENT ON TABLE expected_arrivals IS 'Pre-registered visitor arrivals for secur
 
 CREATE INDEX IF NOT EXISTS idx_arrivals_apartment ON expected_arrivals (apartment_id, status);
 CREATE INDEX IF NOT EXISTS idx_arrivals_expected ON expected_arrivals (expected_at) WHERE status = 'scheduled';
+
+-- ============================================================================
+-- Push Notification Tokens (Slice 6)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS push_tokens (
+    token_id        SERIAL PRIMARY KEY,
+    user_id         INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    platform        VARCHAR(10) NOT NULL CHECK (platform IN ('ios', 'android')),
+    token           VARCHAR(500) NOT NULL,
+    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (user_id, platform, token)
+);
+
+COMMENT ON TABLE push_tokens IS 'Expo push notification tokens for mobile devices.';
+
+CREATE INDEX IF NOT EXISTS idx_push_tokens_user ON push_tokens (user_id) WHERE is_active = TRUE;

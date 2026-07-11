@@ -385,3 +385,33 @@ class ExpectedArrivalOut(BaseModel):
 class ArrivalAction(BaseModel):
     """Mark an arrival as arrived or cancelled."""
     action: str  # "arrive" or "cancel"
+
+
+# ============================================================================
+# Push Notifications (Slice 6)
+# ============================================================================
+
+
+class PushTokenCreate(BaseModel):
+    """Register a device push notification token."""
+    platform: str  # "ios" or "android"
+    token: str
+
+
+class PushTokenOut(BaseModel):
+    """Push token response."""
+    token_id: int
+    platform: str
+    token: str
+    is_active: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class PushNotification(BaseModel):
+    """A push notification to send via Expo."""
+    user_ids: list[int]
+    title: str
+    body: str
+    data: Optional[dict] = None

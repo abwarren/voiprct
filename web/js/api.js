@@ -105,3 +105,8 @@ export const getExpectedArrivals = (aptId, statusFilter) => {
   return apiGet(`/api/v1/arrivals/${aptId}${qs}`);
 };
 export const arrivalAction = (arrivalId, action) => apiPost(`/api/v1/arrivals/${arrivalId}/action`, { action });
+
+// ── Push Notification Tokens ──
+export const registerPushToken = (platform, token) => apiPost('/api/v1/push-tokens', { platform, token });
+export const getPushTokens = () => apiGet('/api/v1/push-tokens');
+export const removePushToken = (tokenId) => apiDelete(`/api/v1/push-tokens/${tokenId}`);

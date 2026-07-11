@@ -9,7 +9,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.api import router
 from src.config import settings
@@ -43,6 +44,26 @@ app.add_middleware(
 )
 
 app.include_router(router)
+
+
+# ── Static Files (Web Dashboard) ──────────────────────────────────────────────
+
+import os
+
+WEB_DIR = os.path.join(os.path.dirname(__file__), "..", "web")
+INDEX_PATH = os.path.join(WEB_DIR, "index.html")
+
+if os.path.isdir(WEB_DIR):
+    app.mount("/static", StaticFiles(directory=WEB_DIR, html=False), name="web_static")
+
+    @app.get("/{full_path:path}")
+    async def serve_web(full_path: str):
+        # Don't intercept API routes, health, or WebSocket
+        if full_path.startswith("api/") or full_path == "ws" or full_path == "health" or full_path.startswith("static/"):
+            return JSONResponse({"error": "not found"}, status_code=404)
+        if os.path.isfile(INDEX_PATH):
+            return FileResponse(INDEX_PATH)
+        return JSONResponse({"error": "not found"}, status_code=404)
 
 
 # ── WebSocket Gateway ───────────────────────────────────────────────────────

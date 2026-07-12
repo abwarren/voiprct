@@ -70,6 +70,20 @@ export default function TabLayout() {
         />
       )}
 
+      {/* Directory — residents only */}
+      {isResident && (
+        <Tabs.Screen
+          name="directory"
+          options={{
+            title: 'Directory',
+            headerTitle: 'Find Neighbour',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="search" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
+
       {/* Residents — only property admins and body corp */}
       {(isPropertyAdmin || isBodyCorp) && (
         <Tabs.Screen

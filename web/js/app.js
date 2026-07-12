@@ -37,6 +37,10 @@ const routes = {
     const { renderVisitors } = await import('./views/visitors.js');
     await renderVisitors();
   },
+  '/security': async () => {
+    const { renderSecurity } = await import('./views/security.js');
+    await renderSecurity();
+  },
 };
 
 async function router() {

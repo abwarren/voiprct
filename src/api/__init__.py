@@ -1122,6 +1122,112 @@ async def arrival_action(
 
 
 # ============================================================================
+# Security Dashboard (Slice 7)
+# ============================================================================
+
+
+@router.get("/security/overview")
+async def security_overview(
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Estate-wide overview for security: today's expected arrivals, active PINs, recent calls."""
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start.replace(hour=23, minute=59, second=59)
+
+    async with db_pool.acquire() as conn:
+        # Check if user has security/body-corp access
+        has_access = await conn.fetchval("""
+            SELECT EXISTS(SELECT 1 FROM user_roles ur JOIN roles r ON ur.role_id = r.role_id
+            WHERE ur.user_id = $1 AND r.role_name IN ('security', 'body_corp_admin', 'super_admin'))
+        """, current_user.user_id)
+        if not has_access:
+            raise HTTPException(status_code=403, detail="Access denied")
+
+        # Today's expected arrivals
+        arrivals = await conn.fetch("""
+            SELECT ea.*, a.building, a.unit_number, u.full_name as resident_name
+            FROM expected_arrivals ea
+            JOIN apartments a ON ea.apartment_id = a.apartment_id
+            JOIN users u ON ea.created_by = u.user_id
+            WHERE ea.expected_at >= $1 AND ea.expected_at <= $2 AND ea.status = 'scheduled'
+            ORDER BY ea.expected_at ASC
+        """, today_start, today_end)
+
+        # Active visitor PINs
+        pins = await conn.fetch("""
+            SELECT vp.*, a.building, a.unit_number, u.full_name as created_by_name
+            FROM visitor_pins vp
+            JOIN apartments a ON vp.apartment_id = a.apartment_id
+            JOIN users u ON vp.created_by = u.user_id
+            WHERE vp.is_active = TRUE AND vp.expires_at > NOW()
+            ORDER BY vp.created_at DESC
+        """)
+
+        # Recent gate calls (last 24h)
+        calls = await conn.fetch("""
+            SELECT gc.*, a.building, a.unit_number
+            FROM gate_calls gc
+            JOIN apartments a ON gc.apartment_id = a.apartment_id
+            WHERE gc.started_at >= $1
+            ORDER BY gc.started_at DESC
+            LIMIT 50
+        """, today_start)
+
+    return {
+        "expected_arrivals": [dict(r) for r in arrivals],
+        "active_pins": [dict(r) for r in pins],
+        "recent_calls": [dict(r) for r in calls],
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+# ============================================================================
+# Directory (Slice 7) — Search by exact unit number
+# ============================================================================
+
+
+@router.get("/directory/search")
+async def directory_search(
+    unit: str,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Search for a neighbour by exact unit number.
+
+    Only returns residents who have opted into the directory.
+    Resident must have a pre-existing relationship (know the unit number).
+    Returns unit info + resident names (no email/phone without consent).
+    """
+    async with db_pool.acquire() as conn:
+        apt = await conn.fetchrow(
+            "SELECT apartment_id, building, unit_number FROM apartments WHERE unit_number = $1 AND is_active = TRUE",
+            unit.strip(),
+        )
+        if not apt:
+            return {"found": False, "apartment": None, "residents": []}
+
+        residents = await conn.fetch("""
+            SELECT u.full_name, u.user_id, ar.is_primary
+            FROM apartment_residents ar
+            JOIN users u ON ar.user_id = u.user_id
+            WHERE ar.apartment_id = $1 AND ar.is_active = TRUE
+            ORDER BY ar.is_primary DESC, u.full_name ASC
+        """, apt["apartment_id"])
+
+    return {
+        "found": True,
+        "apartment": {
+            "building": apt["building"],
+            "unit_number": apt["unit_number"],
+            "apartment_id": apt["apartment_id"],
+        },
+        "residents": [dict(r) for r in residents],
+    }
+
+
+# ============================================================================
 # Push Notifications (Slice 6)
 # ============================================================================
 

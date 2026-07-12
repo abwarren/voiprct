@@ -176,6 +176,7 @@ function layout(body) {
     ...(isResident || roles.includes('property_admin') ? [{ hash: '#/gate', label: 'Gate', icon: '📞' }] : []),
     ...(isResident || isManager ? [{ hash: '#/visitors', label: 'Visitors', icon: '🔑' }] : []),
     ...(isManager ? [{ hash: '#/tenants', label: 'Tenants', icon: '👥' }] : []),
+    ...(isSecurity || isBodyCorp ? [{ hash: '#/security', label: 'Security', icon: '🛡️' }] : []),
     ...(isBodyCorp ? [{ hash: '#/estate', label: 'Estate', icon: '🏢' }] : []),
     { hash: '#/profile', label: 'Profile', icon: '👤' },
   ];

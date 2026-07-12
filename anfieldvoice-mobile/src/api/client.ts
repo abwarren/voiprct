@@ -319,3 +319,23 @@ export function getPushTokens(): Promise<ApiResponse<Array<{ token_id: number; p
 export function removePushToken(tokenId: number): Promise<ApiResponse<{ status: string }>> {
   return request('DELETE', `/api/v1/push-tokens/${tokenId}`);
 }
+
+// ============================================================================
+// Security Dashboard Endpoints (Slice 7)
+// ============================================================================
+
+export function getSecurityOverview(): Promise<ApiResponse<{
+  expected_arrivals: Array<Record<string, unknown>>;
+  active_pins: Array<Record<string, unknown>>;
+  recent_calls: Array<Record<string, unknown>>;
+}>> {
+  return request('GET', '/api/v1/security/overview');
+}
+
+export function directorySearch(unit: string): Promise<ApiResponse<{
+  found: boolean;
+  apartment?: { building?: string; unit_number: string; apartment_id: number };
+  residents: Array<{ full_name: string; user_id: number; is_primary: boolean }>;
+}>> {
+  return request('GET', `/api/v1/directory/search?unit=${encodeURIComponent(unit)}`);
+}

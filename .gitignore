@@ -10,3 +10,6 @@ build/
 .venv/
 venv/
 *.log
+android/
+*.apk
+*.aab

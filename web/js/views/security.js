@@ -138,6 +138,7 @@ function layout(body) {
     ...(isSecurity || isBodyCorp ? [{ hash: '#/security', label: 'Security', icon: '🛡️' }] : []),
     ...(isResident || roles.includes('property_admin') ? [{ hash: '#/gate', label: 'Gate', icon: '📞' }] : []),
     ...(isResident || isManager ? [{ hash: '#/visitors', label: 'Visitors', icon: '🔑' }] : []),
+    ...(isResident ? [{ hash: '#/nfc', label: 'NFC', icon: '📱' }] : []),
     ...(isManager ? [{ hash: '#/tenants', label: 'Tenants', icon: '👥' }] : []),
     ...(isBodyCorp ? [{ hash: '#/estate', label: 'Estate', icon: '🏢' }] : []),
     { hash: '#/profile', label: 'Profile', icon: '👤' },

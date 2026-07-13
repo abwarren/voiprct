@@ -84,6 +84,20 @@ export default function TabLayout() {
         />
       )}
 
+      {/* NFC Access — residents only */}
+      {isResident && (
+        <Tabs.Screen
+          name="nfc"
+          options={{
+            title: 'NFC',
+            headerTitle: 'NFC Gate Access',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="phone-portrait" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
+
       {/* Residents — only property admins and body corp */}
       {(isPropertyAdmin || isBodyCorp) && (
         <Tabs.Screen

@@ -169,6 +169,53 @@ export interface WsConnected {
 export type WsMessage = WsIncomingCall | WsCallUpdated | WsConnected;
 
 // ============================================================================
+// NFC Credentials — Phone-as-Tag Gate Access (Slice 9)
+// ============================================================================
+
+export interface NfcCredential {
+  credential_id: number;
+  user_id: number;
+  apartment_id: number;
+  tag_uid?: string;
+  phone_token?: string;
+  credential_type: 'tag' | 'phone';
+  is_active: boolean;
+  activated_at?: string;
+  deactivated_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ActivatePhoneNfcRequest {
+  apartment_id: number;
+}
+
+export interface RegisterTagRequest {
+  user_id: number;
+  apartment_id: number;
+  tag_uid: string;
+}
+
+export interface NfcVerifyResponse {
+  granted: boolean;
+  apartment_id?: number;
+  resident_name?: string;
+  reason?: string;
+}
+
+export interface GateAccessLogEntry {
+  access_id: number;
+  credential_id: number;
+  apartment_id: number;
+  gate_unit: string;
+  access_type: 'tag' | 'phone';
+  granted: boolean;
+  reason?: string;
+  created_at: string;
+}
+
+
+// ============================================================================
 // Recurring Visitors (Slice 8)
 // ============================================================================
 

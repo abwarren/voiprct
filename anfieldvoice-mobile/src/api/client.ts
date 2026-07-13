@@ -17,6 +17,11 @@ import {
   RecurringVisitor,
   RecurringVisitorCreate,
   RecurringVisitorUpdate,
+  NfcCredential,
+  ActivatePhoneNfcRequest,
+  RegisterTagRequest,
+  NfcVerifyResponse,
+  GateAccessLogEntry,
 }
 } from '../types';
 
@@ -342,6 +347,31 @@ export function directorySearch(unit: string): Promise<ApiResponse<{
 }>> {
   return request('GET', `/api/v1/directory/search?unit=${encodeURIComponent(unit)}`);
 }
+
+// ============================================================================
+// NFC Credential Endpoints (Slice 9)
+// ============================================================================
+
+export function activatePhoneNfc(apartmentId: number): Promise<ApiResponse<NfcCredential>> {
+  return request<NfcCredential>('POST', '/api/v1/nfc/activate-phone', { apartment_id: apartmentId });
+}
+
+export function deactivatePhoneNfc(apartmentId: number): Promise<ApiResponse<{ status: string; credential_id: number }>> {
+  return request('POST', '/api/v1/nfc/deactivate-phone', { apartment_id: apartmentId });
+}
+
+export function getNfcCredentials(): Promise<ApiResponse<NfcCredential[]>> {
+  return request<NfcCredential[]>('GET', '/api/v1/nfc/credentials');
+}
+
+export function getNfcAccessLog(apartmentId?: number, limit?: number): Promise<ApiResponse<GateAccessLogEntry[]>> {
+  const params = new URLSearchParams();
+  if (apartmentId) params.set('apartment_id', String(apartmentId));
+  if (limit) params.set('limit', String(limit));
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  return request<GateAccessLogEntry[]>('GET', `/api/v1/nfc/access-log${qs}`);
+}
+
 
 // ============================================================================
 // Recurring Visitor Endpoints (Slice 8)

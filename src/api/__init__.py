@@ -57,6 +57,12 @@ from src.models import (
     RecurringVisitorCreate,
     RecurringVisitorOut,
     RecurringVisitorUpdate,
+    NfcCredentialOut,
+    ActivatePhoneNfcRequest,
+    RegisterTagRequest,
+    VerifyNfcRequest,
+    NfcVerifyResponse,
+    GateAccessLogOut,
 )
 from src.permissions import (
     Action as PermAction,
@@ -1583,3 +1589,263 @@ async def delete_recurring_visitor(
     )
     return {"status": "deleted", "id": recurring_id}
 
+
+# ============================================================================
+# NFC Phone-as-Tag Gate Access (Slice 9)
+# ============================================================================
+
+
+@router.post("/nfc/activate-phone")
+async def nfc_activate_phone(
+    body: ActivatePhoneNfcRequest,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Activate phone NFC for an apartment. Deactivates any physical tag."""
+    from src.permissions import resolve_permissions
+    perms = await resolve_permissions(db_pool, current_user.user_id, body.apartment_id)
+    if not (perms.is_resident or perms.is_super_admin):
+        raise HTTPException(status_code=403, detail="Only residents can activate phone NFC for their apartment")
+
+    async with db_pool.acquire() as conn:
+        async with conn.transaction():
+            # Deactivate any existing phone credential for this user+apartment
+            await conn.execute("""
+                UPDATE nfc_credentials
+                SET is_active = FALSE, deactivated_at = NOW(), updated_at = NOW()
+                WHERE user_id = $1 AND apartment_id = $2 AND credential_type = 'phone' AND is_active = TRUE
+            """, current_user.user_id, body.apartment_id)
+
+            # Deactivate physical tag for this apartment (mutual exclusivity)
+            await conn.execute("""
+                UPDATE nfc_credentials
+                SET is_active = FALSE, deactivated_at = NOW(), updated_at = NOW()
+                WHERE apartment_id = $1 AND credential_type = 'tag' AND is_active = TRUE
+            """, body.apartment_id)
+
+            # Generate new phone token
+            phone_token = str(uuid.uuid4())
+
+            row = await conn.fetchrow("""
+                INSERT INTO nfc_credentials
+                    (user_id, apartment_id, phone_token, credential_type, is_active, activated_at)
+                VALUES ($1, $2, $3, 'phone', TRUE, NOW())
+                RETURNING *
+            """, current_user.user_id, body.apartment_id, phone_token)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=body.apartment_id,
+        action="nfc_phone_activated",
+        target_type="nfc_credential",
+        target_id=row["credential_id"],
+        new_value={"credential_type": "phone", "apartment_id": body.apartment_id},
+        ip_address=request.client.host if request.client else None,
+    )
+    return dict(row)
+
+
+@router.post("/nfc/deactivate-phone")
+async def nfc_deactivate_phone(
+    body: ActivatePhoneNfcRequest,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Deactivate phone NFC. The physical tag (if any) becomes active again."""
+    from src.permissions import resolve_permissions
+    perms = await resolve_permissions(db_pool, current_user.user_id, body.apartment_id)
+    if not (perms.is_resident or perms.is_super_admin):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    async with db_pool.acquire() as conn:
+        row = await conn.fetchrow("""
+            UPDATE nfc_credentials
+            SET is_active = FALSE, deactivated_at = NOW(), updated_at = NOW()
+            WHERE user_id = $1 AND apartment_id = $2 AND credential_type = 'phone' AND is_active = TRUE
+            RETURNING *
+        """, current_user.user_id, body.apartment_id)
+
+        if not row:
+            raise HTTPException(status_code=404, detail="No active phone credential found")
+
+        # Reactivate physical tag for this apartment
+        await conn.execute("""
+            UPDATE nfc_credentials
+            SET is_active = TRUE, activated_at = NOW(), updated_at = NOW()
+            WHERE apartment_id = $1 AND credential_type = 'tag' AND deactivated_at IS NOT NULL
+        """, body.apartment_id)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=body.apartment_id,
+        action="nfc_phone_deactivated",
+        target_type="nfc_credential",
+        target_id=row["credential_id"],
+        ip_address=request.client.host if request.client else None,
+    )
+    return {"status": "deactivated", "credential_id": row["credential_id"]}
+
+
+@router.post("/nfc/verify")
+async def nfc_verify_credential(
+    body: VerifyNfcRequest,
+    request: Request,
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Gate reader verifies a credential (tag UID or phone token)."""
+    if not body.tag_uid and not body.phone_token:
+        raise HTTPException(status_code=400, detail="Either tag_uid or phone_token is required")
+
+    async with db_pool.acquire() as conn:
+        if body.phone_token:
+            cred = await conn.fetchrow("""
+                SELECT nc.credential_id, nc.apartment_id, nc.credential_type,
+                       u.full_name AS resident_name
+                FROM nfc_credentials nc
+                JOIN users u ON nc.user_id = u.user_id
+                WHERE nc.phone_token = $1 AND nc.is_active = TRUE AND u.is_active = TRUE
+            """, body.phone_token)
+        else:
+            cred = await conn.fetchrow("""
+                SELECT nc.credential_id, nc.apartment_id, nc.credential_type,
+                       u.full_name AS resident_name
+                FROM nfc_credentials nc
+                JOIN users u ON nc.user_id = u.user_id
+                WHERE nc.tag_uid = $1 AND nc.is_active = TRUE AND u.is_active = TRUE
+            """, body.tag_uid)
+
+        if not cred:
+            await conn.execute("""
+                INSERT INTO gate_access_log (credential_id, apartment_id, gate_unit, access_type, granted, reason)
+                VALUES (0, 0, $1, $2, FALSE, 'Credential not found or inactive')
+            """, body.gate_unit, 'phone' if body.phone_token else 'tag')
+            return {"granted": False, "reason": "Credential not found or inactive"}
+
+        await conn.execute("""
+            INSERT INTO gate_access_log (credential_id, apartment_id, gate_unit, access_type, granted)
+            VALUES ($1, $2, $3, $4, TRUE)
+        """, cred["credential_id"], cred["apartment_id"], body.gate_unit, cred["credential_type"])
+
+    return {"granted": True, "apartment_id": cred["apartment_id"], "resident_name": cred["resident_name"]}
+
+
+@router.get("/nfc/credentials")
+async def nfc_list_credentials(
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """List the current user's NFC credentials."""
+    async with db_pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT * FROM nfc_credentials
+            WHERE user_id = $1
+            ORDER BY created_at DESC
+        """, current_user.user_id)
+        return [dict(r) for r in rows]
+
+
+@router.post("/nfc/register-tag", status_code=status.HTTP_201_CREATED)
+async def nfc_register_tag(
+    body: RegisterTagRequest,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Admin registers a physical tag UID for a resident."""
+    from src.permissions import resolve_permissions
+    perms = await resolve_permissions(db_pool, current_user.user_id, body.apartment_id)
+    if not (perms.is_body_corp_admin or perms.is_super_admin):
+        raise HTTPException(status_code=403, detail="Only body corp admins can register physical tags")
+
+    async with db_pool.acquire() as conn:
+        await conn.execute("""
+            UPDATE nfc_credentials
+            SET is_active = FALSE, updated_at = NOW()
+            WHERE apartment_id = $1 AND credential_type = 'tag' AND is_active = TRUE
+        """, body.apartment_id)
+
+        row = await conn.fetchrow("""
+            INSERT INTO nfc_credentials
+                (user_id, apartment_id, tag_uid, credential_type, is_active, activated_at)
+            VALUES ($1, $2, $3, 'tag', TRUE, NOW())
+            RETURNING *
+        """, body.user_id, body.apartment_id, body.tag_uid)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=body.apartment_id,
+        action="nfc_tag_registered",
+        target_type="nfc_credential",
+        target_id=row["credential_id"],
+        new_value={"tag_uid": body.tag_uid, "user_id": body.user_id},
+        ip_address=request.client.host if request.client else None,
+    )
+    return dict(row)
+
+
+@router.delete("/nfc/credentials/{credential_id}")
+async def nfc_delete_credential(
+    credential_id: int,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Delete an NFC credential (tag or phone)."""
+    async with db_pool.acquire() as conn:
+        cred = await conn.fetchrow("SELECT * FROM nfc_credentials WHERE credential_id = $1", credential_id)
+        if not cred:
+            raise HTTPException(status_code=404, detail="Credential not found")
+
+        if cred["user_id"] != current_user.user_id:
+            from src.permissions import resolve_permissions
+            perms = await resolve_permissions(db_pool, current_user.user_id, cred["apartment_id"])
+            if not (perms.is_body_corp_admin or perms.is_super_admin):
+                raise HTTPException(status_code=403, detail="Access denied")
+
+        await conn.execute("DELETE FROM nfc_credentials WHERE credential_id = $1", credential_id)
+
+    return {"status": "deleted", "id": credential_id}
+
+
+@router.get("/nfc/access-log")
+async def nfc_access_log(
+    apartment_id: Optional[int] = Query(None),
+    limit: int = Query(default=50, le=200),
+    offset: int = Query(default=0, ge=0),
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Gate access history. Filterable by apartment."""
+    from src.permissions import resolve_permissions
+
+    if apartment_id:
+        perms = await resolve_permissions(db_pool, current_user.user_id, apartment_id)
+        if not (perms.is_resident or perms.is_property_admin or perms.is_body_corp_admin or perms.is_super_admin):
+            raise HTTPException(status_code=403, detail="Access denied")
+
+    async with db_pool.acquire() as conn:
+        if apartment_id:
+            rows = await conn.fetch("""
+                SELECT gal.*, nc.credential_type, nc.tag_uid, nc.phone_token
+                FROM gate_access_log gal
+                JOIN nfc_credentials nc ON gal.credential_id = nc.credential_id
+                WHERE gal.apartment_id = $1
+                ORDER BY gal.created_at DESC
+                LIMIT $2 OFFSET $3
+            """, apartment_id, limit, offset)
+        else:
+            rows = await conn.fetch("""
+                SELECT gal.*, nc.credential_type
+                FROM gate_access_log gal
+                JOIN nfc_credentials nc ON gal.credential_id = nc.credential_id
+                WHERE nc.user_id = $1
+                ORDER BY gal.created_at DESC
+                LIMIT $2 OFFSET $3
+            """, current_user.user_id, limit, offset)
+
+        return [dict(r) for r in rows]

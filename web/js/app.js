@@ -41,6 +41,10 @@ const routes = {
     const { renderSecurity } = await import('./views/security.js');
     await renderSecurity();
   },
+  '/nfc': async () => {
+    const { renderNfc } = await import('./views/nfc.js');
+    await renderNfc();
+  },
 };
 
 async function router() {

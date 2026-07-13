@@ -323,3 +323,68 @@ CREATE TABLE IF NOT EXISTS push_tokens (
 COMMENT ON TABLE push_tokens IS 'Expo push notification tokens for mobile devices.';
 
 CREATE INDEX IF NOT EXISTS idx_push_tokens_user ON push_tokens (user_id) WHERE is_active = TRUE;
+
+-- ============================================================================
+-- Recurring Visitors (Slice 8)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS recurring_visitors (
+    recurring_id    SERIAL PRIMARY KEY,
+    apartment_id    INT NOT NULL REFERENCES apartments(apartment_id),
+    created_by      INT NOT NULL REFERENCES users(user_id),
+    visitor_name    VARCHAR(255) NOT NULL,
+    vehicle_plate   VARCHAR(20),
+    schedule_type   VARCHAR(20) NOT NULL
+                    CHECK (schedule_type IN ('daily', 'weekly', 'weekdays', 'custom')),
+    schedule_data   JSONB,
+    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    valid_from      DATE,
+    valid_until     DATE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE recurring_visitors IS 'Pre-scheduled recurring visitors for routine access (cleaners, gardeners, deliveries).';
+
+CREATE INDEX IF NOT EXISTS idx_recurring_visitors_apt ON recurring_visitors (apartment_id) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_recurring_visitors_created_by ON recurring_visitors (created_by);
+
+-- ============================================================================
+-- NFC Credentials — Phone-as-Tag Gate Access (Slice 9)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS nfc_credentials (
+    credential_id   SERIAL PRIMARY KEY,
+    user_id         INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    apartment_id    INT NOT NULL REFERENCES apartments(apartment_id),
+    tag_uid         VARCHAR(50) UNIQUE,
+    phone_token     VARCHAR(100) UNIQUE,
+    credential_type VARCHAR(10) NOT NULL CHECK (credential_type IN ('tag', 'phone')),
+    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    activated_at    TIMESTAMPTZ,
+    deactivated_at  TIMESTAMPTZ,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE nfc_credentials IS 'NFC access credentials for gate entry. tag = physical fob/card. phone = phone emulating tag via HCE. Mutually exclusive per apartment: activating phone deactivates the physical tag.';
+
+CREATE INDEX IF NOT EXISTS idx_nfc_tag_uid ON nfc_credentials (tag_uid) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_nfc_phone_token ON nfc_credentials (phone_token) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_nfc_user_apartment ON nfc_credentials (user_id, apartment_id);
+
+CREATE TABLE IF NOT EXISTS gate_access_log (
+    access_id       SERIAL PRIMARY KEY,
+    credential_id   INT NOT NULL REFERENCES nfc_credentials(credential_id),
+    apartment_id    INT NOT NULL REFERENCES apartments(apartment_id),
+    gate_unit       VARCHAR(50) NOT NULL,
+    access_type     VARCHAR(10) NOT NULL CHECK (access_type IN ('tag', 'phone')),
+    granted         BOOLEAN NOT NULL,
+    reason          VARCHAR(255),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE gate_access_log IS 'Record of every NFC gate access attempt.';
+
+CREATE INDEX IF NOT EXISTS idx_gate_access_apartment ON gate_access_log (apartment_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_gate_access_credential ON gate_access_log (credential_id);

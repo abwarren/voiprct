@@ -461,3 +461,66 @@ class PushNotification(BaseModel):
     title: str
     body: str
     data: Optional[dict] = None
+
+
+# ============================================================================
+# NFC Credentials — Phone-as-Tag Gate Access (Slice 9)
+# ============================================================================
+
+
+class NfcCredentialOut(BaseModel):
+    """NFC credential response."""
+    credential_id: int
+    user_id: int
+    apartment_id: int
+    tag_uid: Optional[str] = None
+    phone_token: Optional[str] = None
+    credential_type: str
+    is_active: bool
+    activated_at: Optional[datetime] = None
+    deactivated_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ActivatePhoneNfcRequest(BaseModel):
+    """Activate phone-as-tag for an apartment."""
+    apartment_id: int
+
+
+class RegisterTagRequest(BaseModel):
+    """Admin registers a physical tag UID for a resident."""
+    user_id: int
+    apartment_id: int
+    tag_uid: str
+
+
+class VerifyNfcRequest(BaseModel):
+    """Gate reader verifies a credential."""
+    tag_uid: Optional[str] = None
+    phone_token: Optional[str] = None
+    gate_unit: str = "Main Gate"
+
+
+class NfcVerifyResponse(BaseModel):
+    """NFC verification result."""
+    granted: bool
+    apartment_id: Optional[int] = None
+    resident_name: Optional[str] = None
+    reason: Optional[str] = None
+
+
+class GateAccessLogOut(BaseModel):
+    """Gate access log entry."""
+    access_id: int
+    credential_id: int
+    apartment_id: int
+    gate_unit: str
+    access_type: str
+    granted: bool
+    reason: Optional[str] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

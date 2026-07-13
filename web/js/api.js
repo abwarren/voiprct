@@ -122,3 +122,15 @@ export const createRecurringVisitor = (data) => apiPost('/api/v1/recurring-visit
 export const updateRecurringVisitor = (id, data) => apiPatch(`/api/v1/recurring-visitors/${id}`, data);
 export const deleteRecurringVisitor = (id) => apiDelete(`/api/v1/recurring-visitors/${id}`);
 
+// ── NFC Phone-as-Tag ──
+export const getNfcCredentials = () => apiGet('/api/v1/nfc/credentials');
+export const activatePhoneNfc = (aptId) => apiPost('/api/v1/nfc/activate-phone', { apartment_id: aptId });
+export const deactivatePhoneNfc = (aptId) => apiPost('/api/v1/nfc/deactivate-phone', { apartment_id: aptId });
+export const getNfcAccessLog = (aptId, limit) => {
+  const p = new URLSearchParams();
+  if (aptId) p.set('apartment_id', aptId);
+  if (limit) p.set('limit', limit);
+  const qs = p.toString() ? `?${p}` : '';
+  return apiGet(`/api/v1/nfc/access-log${qs}`);
+};
+

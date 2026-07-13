@@ -116,3 +116,9 @@ export const getSecurityOverview = () => apiGet('/api/v1/security/overview');
 
 // ── Directory Search ──
 export const directorySearch = (unit) => apiGet(`/api/v1/directory/search?unit=${encodeURIComponent(unit)}`);
+// ── Recurring Visitors ──
+export const getRecurringVisitors = (aptId) => apiGet(`/api/v1/recurring-visitors/${aptId}`);
+export const createRecurringVisitor = (data) => apiPost('/api/v1/recurring-visitors', data);
+export const updateRecurringVisitor = (id, data) => apiPatch(`/api/v1/recurring-visitors/${id}`, data);
+export const deleteRecurringVisitor = (id) => apiDelete(`/api/v1/recurring-visitors/${id}`);
+

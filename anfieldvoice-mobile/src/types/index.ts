@@ -167,3 +167,44 @@ export interface WsConnected {
 }
 
 export type WsMessage = WsIncomingCall | WsCallUpdated | WsConnected;
+
+// ============================================================================
+// Recurring Visitors (Slice 8)
+// ============================================================================
+
+export interface RecurringVisitor {
+  recurring_id: number;
+  apartment_id: number;
+  created_by: number;
+  created_by_name?: string;
+  visitor_name: string;
+  vehicle_plate?: string;
+  schedule_type: 'daily' | 'weekly' | 'weekdays' | 'custom';
+  schedule_data?: Record<string, unknown>;
+  is_active: boolean;
+  valid_from?: string;
+  valid_until?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecurringVisitorCreate {
+  apartment_id: number;
+  visitor_name: string;
+  vehicle_plate?: string;
+  schedule_type: 'daily' | 'weekly' | 'weekdays' | 'custom';
+  schedule_data?: Record<string, unknown>;
+  valid_from?: string;
+  valid_until?: string;
+}
+
+export interface RecurringVisitorUpdate {
+  visitor_name?: string;
+  vehicle_plate?: string;
+  schedule_type?: string;
+  schedule_data?: Record<string, unknown>;
+  is_active?: boolean;
+  valid_from?: string;
+  valid_until?: string;
+}
+

@@ -23,17 +23,20 @@ COMMENT ON TABLE roles IS 'System-wide roles. Roles are additive, not exclusive.
 
 -- ----------------------------------------------------------------------------
 -- Users
--- ----------------------------------------------------------------------------
-CREATE TABLE users (
+-- Users (accounts)
+CREATE TABLE IF NOT EXISTS users (
     user_id         SERIAL PRIMARY KEY,
+    username        VARCHAR(20) UNIQUE,
     email           VARCHAR(255) UNIQUE NOT NULL,
-    phone           VARCHAR(50),
+    password_hash   TEXT NOT NULL,
     full_name       VARCHAR(255) NOT NULL,
-    password_hash   VARCHAR(255) NOT NULL,
+    phone           VARCHAR(50),
     is_active       BOOLEAN NOT NULL DEFAULT TRUE,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+COMMENT ON COLUMN users.username IS 'Account login handle. Convention: {unit_number}-{initials} e.g. 001-wa. Unique across all users including inactive (prevents re-registration collision).';
 
 CREATE INDEX idx_users_email ON users (LOWER(email));
 CREATE INDEX idx_users_active ON users (is_active) WHERE is_active = TRUE;

@@ -12,6 +12,8 @@ from typing import Optional
 import asyncpg
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
+import json
+
 from src.audit import query_audit_log, write_audit_entry
 from src.auth import (
     CurrentUser,
@@ -52,6 +54,9 @@ from src.models import (
     ArrivalAction,
     PushTokenCreate,
     PushTokenOut,
+    RecurringVisitorCreate,
+    RecurringVisitorOut,
+    RecurringVisitorUpdate,
 )
 from src.permissions import (
     Action as PermAction,
@@ -71,23 +76,30 @@ async def login(
     request: Request,
     db_pool=Depends(lambda req: req.app.state.db_pool),
 ):
-    """Authenticate with email and password. Returns a JWT token."""
+    """Authenticate with email or username and password. Returns a JWT token."""
     import json
 
     body = await request.json()
     email = body.get("email", "").strip().lower()
+    username = body.get("username", "").strip().lower()
     password = body.get("password", "")
 
-    if not email or not password:
-        raise HTTPException(status_code=400, detail="Email and password are required")
+    if not password or (not email and not username):
+        raise HTTPException(status_code=400, detail="Password and email or username are required")
 
     async with db_pool.acquire() as conn:
-        user = await conn.fetchrow(
-            "SELECT user_id, email, password_hash, is_active FROM users WHERE LOWER(email) = $1",
-            email,
-        )
+        if email:
+            user = await conn.fetchrow(
+                "SELECT user_id, email, username, password_hash, full_name, is_active FROM users WHERE LOWER(email) = $1",
+                email,
+            )
+        else:
+            user = await conn.fetchrow(
+                "SELECT user_id, email, username, password_hash, full_name, is_active FROM users WHERE username = $1",
+                username,
+            )
         if not user or not verify_password(password, user["password_hash"]):
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Invalid credentials")
 
         if not user["is_active"]:
             raise HTTPException(status_code=403, detail="Account is deactivated")
@@ -1403,7 +1415,7 @@ async def get_my_profile(
     """Get the current user's profile with roles."""
     async with db_pool.acquire() as conn:
         user = await conn.fetchrow(
-            "SELECT user_id, email, phone, full_name, is_active, created_at FROM users WHERE user_id = $1",
+            "SELECT user_id, email, username, phone, full_name, is_active, created_at FROM users WHERE user_id = $1",
             current_user.user_id,
         )
         if not user:
@@ -1419,3 +1431,155 @@ async def get_my_profile(
         result = dict(user)
         result["roles"] = [dict(r) for r in roles]
         return result
+
+# ============================================================================
+# Recurring Visitors (Slice 8)
+# ============================================================================
+
+
+@router.get("/recurring-visitors/{apartment_id}")
+async def get_recurring_visitors(
+    apartment_id: int,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """List recurring visitors for an apartment. Accessible by residents, PAs, and body corp."""
+    from src.permissions import resolve_permissions
+    perms = await resolve_permissions(db_pool, current_user.user_id, apartment_id)
+    if not (perms.is_resident or perms.is_property_admin or perms.is_body_corp_admin or perms.is_super_admin):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    async with db_pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT rv.*, u.full_name AS created_by_name
+            FROM recurring_visitors rv
+            JOIN users u ON rv.created_by = u.user_id
+            WHERE rv.apartment_id = $1
+            ORDER BY rv.visitor_name
+        """, apartment_id)
+        return [dict(r) for r in rows]
+
+
+@router.post("/recurring-visitors", status_code=status.HTTP_201_CREATED)
+async def create_recurring_visitor(
+    body: RecurringVisitorCreate,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Create a recurring visitor for an apartment."""
+    from src.permissions import resolve_permissions
+    perms = await resolve_permissions(db_pool, current_user.user_id, body.apartment_id)
+    if not (perms.is_resident or perms.is_property_admin or perms.is_body_corp_admin or perms.is_super_admin):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    async with db_pool.acquire() as conn:
+        row = await conn.fetchrow("""
+            INSERT INTO recurring_visitors
+                (apartment_id, created_by, visitor_name, vehicle_plate,
+                 schedule_type, schedule_data, valid_from, valid_until)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING *
+        """, body.apartment_id, current_user.user_id, body.visitor_name,
+            body.vehicle_plate or None, body.schedule_type,
+            json.dumps(body.schedule_data) if body.schedule_data else None,
+            body.valid_from, body.valid_until)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=body.apartment_id,
+        action="recurring_visitor_created",
+        target_type="recurring_visitor",
+        target_id=row["recurring_id"],
+        new_value={"visitor_name": body.visitor_name, "schedule_type": body.schedule_type},
+        ip_address=request.client.host if request.client else None,
+    )
+    return dict(row)
+
+
+@router.patch("/recurring-visitors/{recurring_id}")
+async def update_recurring_visitor(
+    recurring_id: int,
+    body: RecurringVisitorUpdate,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Update a recurring visitor."""
+    async with db_pool.acquire() as conn:
+        existing = await conn.fetchrow(
+            "SELECT * FROM recurring_visitors WHERE recurring_id = $1", recurring_id
+        )
+        if not existing:
+            raise HTTPException(status_code=404, detail="Recurring visitor not found")
+
+        from src.permissions import resolve_permissions
+        perms = await resolve_permissions(db_pool, current_user.user_id, existing["apartment_id"])
+        if not (perms.is_resident or perms.is_property_admin or perms.is_body_corp_admin or perms.is_super_admin):
+            raise HTTPException(status_code=403, detail="Access denied")
+
+        updates = {}
+        for field in ["visitor_name", "vehicle_plate", "schedule_type", "schedule_data", "is_active", "valid_from", "valid_until"]:
+            val = getattr(body, field, None)
+            if val is not None:
+                updates[field] = val
+        if not updates:
+            raise HTTPException(status_code=400, detail="No fields to update")
+
+        set_clause = ", ".join([f"{k} = ${i+2}" for i, k in enumerate(updates.keys())])
+        updates["updated_at"] = "NOW()"
+        set_clause += ", updated_at = NOW()"
+
+        sql = f"UPDATE recurring_visitors SET {set_clause} WHERE recurring_id = $1 RETURNING *"
+        values = [recurring_id] + list(updates.values())
+        row = await conn.fetchrow(sql, *values)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=existing["apartment_id"],
+        action="recurring_visitor_updated",
+        target_type="recurring_visitor",
+        target_id=recurring_id,
+        previous_value={"visitor_name": existing["visitor_name"], "schedule_type": existing["schedule_type"]},
+        new_value=updates,
+        ip_address=request.client.host if request.client else None,
+    )
+    return dict(row)
+
+
+@router.delete("/recurring-visitors/{recurring_id}")
+async def delete_recurring_visitor(
+    recurring_id: int,
+    request: Request,
+    current_user: CurrentUser = Depends(get_current_user),
+    db_pool=Depends(lambda req: req.app.state.db_pool),
+):
+    """Delete a recurring visitor."""
+    async with db_pool.acquire() as conn:
+        existing = await conn.fetchrow(
+            "SELECT * FROM recurring_visitors WHERE recurring_id = $1", recurring_id
+        )
+        if not existing:
+            raise HTTPException(status_code=404, detail="Recurring visitor not found")
+
+        from src.permissions import resolve_permissions
+        perms = await resolve_permissions(db_pool, current_user.user_id, existing["apartment_id"])
+        if not (perms.is_resident or perms.is_property_admin or perms.is_body_corp_admin or perms.is_super_admin):
+            raise HTTPException(status_code=403, detail="Access denied")
+
+        await conn.execute("DELETE FROM recurring_visitors WHERE recurring_id = $1", recurring_id)
+
+    await write_audit_entry(
+        db_pool,
+        admin_user_id=current_user.user_id,
+        apartment_id=existing["apartment_id"],
+        action="recurring_visitor_deleted",
+        target_type="recurring_visitor",
+        target_id=recurring_id,
+        previous_value={"visitor_name": existing["visitor_name"]},
+        ip_address=request.client.host if request.client else None,
+    )
+    return {"status": "deleted", "id": recurring_id}
+

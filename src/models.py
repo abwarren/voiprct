@@ -36,6 +36,7 @@ class RoleOut(BaseModel):
 
 class UserBase(BaseModel):
     email: EmailStr
+    username: Optional[str] = None
     phone: Optional[str] = None
     full_name: str
 
@@ -407,6 +408,51 @@ class PushTokenOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ============================================================================
+# Recurring Visitors (Slice 8)
+# ============================================================================
+
+
+class RecurringVisitorCreate(BaseModel):
+    """Define a recurring visitor schedule."""
+    apartment_id: int
+    visitor_name: str
+    vehicle_plate: Optional[str] = None
+    schedule_type: str = 'weekly'  # daily, weekly, weekdays, custom
+    schedule_data: Optional[dict] = None
+    valid_from: Optional[date] = None
+    valid_until: Optional[date] = None
+
+
+class RecurringVisitorOut(BaseModel):
+    """Recurring visitor response."""
+    recurring_id: int
+    apartment_id: int
+    created_by: int
+    visitor_name: str
+    vehicle_plate: Optional[str] = None
+    schedule_type: str
+    schedule_data: Optional[dict] = None
+    is_active: bool
+    valid_from: Optional[date] = None
+    valid_until: Optional[date] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class RecurringVisitorUpdate(BaseModel):
+    """Update recurring visitor schedule."""
+    visitor_name: Optional[str] = None
+    vehicle_plate: Optional[str] = None
+    schedule_type: Optional[str] = None
+    schedule_data: Optional[dict] = None
+    is_active: Optional[bool] = None
+    valid_from: Optional[date] = None
+    valid_until: Optional[date] = None
 
 
 class PushNotification(BaseModel):

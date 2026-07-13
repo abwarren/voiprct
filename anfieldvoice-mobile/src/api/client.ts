@@ -4,17 +4,20 @@
 // ============================================================================
 
 import * as SecureStore from 'expo-secure-store';
-import type {
+import {
   UserProfile,
   Apartment,
   Resident,
+  AddResidentRequest,
   UserPermissions,
   PermissionCheck,
-  AddResidentRequest,
   AssignPropertyAdminRequest,
   Invitation,
   AuditEntry,
-  GateCall,
+  RecurringVisitor,
+  RecurringVisitorCreate,
+  RecurringVisitorUpdate,
+}
 } from '../types';
 
 // Change this to your production API URL
@@ -339,3 +342,24 @@ export function directorySearch(unit: string): Promise<ApiResponse<{
 }>> {
   return request('GET', `/api/v1/directory/search?unit=${encodeURIComponent(unit)}`);
 }
+
+// ============================================================================
+// Recurring Visitor Endpoints (Slice 8)
+// ============================================================================
+
+export function getRecurringVisitors(apartmentId: number): Promise<ApiResponse<RecurringVisitor[]>> {
+  return request<RecurringVisitor[]>('GET', `/api/v1/recurring-visitors/${apartmentId}`);
+}
+
+export function createRecurringVisitor(data: RecurringVisitorCreate): Promise<ApiResponse<RecurringVisitor>> {
+  return request<RecurringVisitor>('POST', '/api/v1/recurring-visitors', data);
+}
+
+export function updateRecurringVisitor(recurringId: number, data: RecurringVisitorUpdate): Promise<ApiResponse<RecurringVisitor>> {
+  return request<RecurringVisitor>('PATCH', `/api/v1/recurring-visitors/${recurringId}`, data);
+}
+
+export function deleteRecurringVisitor(recurringId: number): Promise<ApiResponse<{ status: string; id: number }>> {
+  return request<{ status: string; id: number }>('DELETE', `/api/v1/recurring-visitors/${recurringId}`);
+}
+

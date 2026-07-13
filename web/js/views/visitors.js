@@ -1,10 +1,10 @@
 // ============================================================================
-// AnfieldVoice Web — Visitors View (Slice 3)
-// PIN management + expected arrivals
+// AnfieldVoice Web — Visitors View (Slice 3 + Slice 8)
+// PIN management + expected arrivals + recurring visitors
 // ============================================================================
 
 export async function renderVisitors() {
-  const { escHtml, formatDate, getMyProfile, getMyApartments, getVisitorPins, createVisitorPin, revokeVisitorPin, getExpectedArrivals, createExpectedArrival, arrivalAction } = await import('../api.js');
+  const { escHtml, formatDate, getMyProfile, getMyApartments, getVisitorPins, createVisitorPin, revokeVisitorPin, getExpectedArrivals, createExpectedArrival, arrivalAction, getRecurringVisitors } = await import('../api.js');
 
   const user = await getMyProfile();
   const apartments = await getMyApartments();
@@ -14,23 +14,27 @@ export async function renderVisitors() {
   for (const apt of apartments) {
     const pins = await getVisitorPins(apt.apartment_id);
     const arrivals = await getExpectedArrivals(apt.apartment_id);
+    let recurring = [];
+    try { recurring = await getRecurringVisitors(apt.apartment_id); } catch(e) { /* empty */ }
 
     body += `
       <div class="card">
         <div class="card-header">
           <div>
             <h3>${escHtml(apt.building || '')} ${escHtml(apt.unit_number)}</h3>
-            <span class="subtitle">${pins.length} active PINs · ${arrivals.filter(a => a.status === 'scheduled').length} scheduled</span>
+            <span class="subtitle">${pins.length} active PINs · ${arrivals.filter(a => a.status === 'scheduled').length} scheduled · ${recurring.filter(r => r.is_active).length} recurring</span>
           </div>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary btn-sm" onclick="showGeneratePin(${apt.apartment_id})">+ Generate PIN</button>
             <button class="btn btn-ghost btn-sm" onclick="showScheduleArrival(${apt.apartment_id})">+ Schedule</button>
+            <button class="btn btn-ghost btn-sm" onclick="showAddRecurring(${apt.apartment_id})">+ Recurring</button>
           </div>
         </div>
 
         <div class="tabs">
           <button class="tab active" onclick="switchVTab(this,'vpins-${apt.apartment_id}')">PINs (${pins.length})</button>
           <button class="tab" onclick="switchVTab(this,'varrivals-${apt.apartment_id}')">Arrivals (${arrivals.length})</button>
+          <button class="tab" onclick="switchVTab(this,'vrecurring-${apt.apartment_id}')">Recurring (${recurring.length})</button>
         </div>
 
         <div id="vpins-${apt.apartment_id}">
@@ -74,6 +78,31 @@ export async function renderVisitors() {
             </div>
           `}
         </div>
+
+        <div id="vrecurring-${apt.apartment_id}" style="display:none">
+          ${recurring.length === 0 ? '<div style="color:var(--text-secondary);text-align:center;padding:20px">No recurring visitors</div>' : `
+            <div class="table-container">
+              <table>
+                <thead><tr><th>Visitor</th><th>Vehicle</th><th>Schedule</th><th>Valid Until</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                  ${recurring.map(r => `
+                    <tr>
+                      <td style="font-weight:600">${escHtml(r.visitor_name)}</td>
+                      <td style="color:var(--text-secondary)">${escHtml(r.vehicle_plate || '-')}</td>
+                      <td><span class="status-badge">${r.schedule_type}</span></td>
+                      <td style="font-size:13px;color:var(--text-secondary)">${r.valid_until ? formatDate(r.valid_until) : 'Ongoing'}</td>
+                      <td><span class="status-badge ${r.is_active ? 'active' : 'suspended'}">${r.is_active ? 'Active' : 'Inactive'}</span></td>
+                      <td>
+                        <button class="btn btn-sm btn-ghost" onclick="showEditRecurring(${r.recurring_id}, ${apt.apartment_id}, '${escHtml(r.visitor_name)}', '${escHtml(r.vehicle_plate || '')}', '${r.schedule_type}', ${r.is_active})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="window.deleteRecurring(${r.recurring_id})">Delete</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
       </div>
     `;
   }
@@ -87,7 +116,7 @@ window.switchVTab = (btn, target) => {
   const parent = btn.closest('.card');
   parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  parent.querySelectorAll('[id^="vpins-"], [id^="varrivals-"]').forEach(el => el.style.display = 'none');
+  parent.querySelectorAll('[id^="vpins-"], [id^="varrivals-"], [id^="vrecurring-"]').forEach(el => el.style.display = 'none');
   const tgt = document.getElementById(target);
   if (tgt) tgt.style.display = 'block';
 };
@@ -133,7 +162,7 @@ window.showGeneratePin = (aptId) => {
       expires_in_hours: parseInt(document.getElementById('pin-hours').value) || 24,
     });
     closeModal();
-    alert(`PIN generated: ${pin.pin_code}\nExpires: ${new Date(pin.expires_at).toLocaleString()}`);
+    alert(`PIN generated: ${pin.pin_code}\\nExpires: ${new Date(pin.expires_at).toLocaleString()}`);
     location.reload();
   };
 };
@@ -197,6 +226,129 @@ window.showScheduleArrival = (aptId) => {
   };
 };
 
+// ── Add Recurring Visitor Modal ──
+window.showAddRecurring = (aptId) => {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay'; overlay.id = 'active-modal';
+  overlay.innerHTML = `
+    <div class="modal-content">
+      <h3>Add Recurring Visitor</h3>
+      <p class="modal-desc">Set up a recurring visitor (cleaner, gardener, regular delivery).</p>
+      <form id="recurring-form">
+        <div class="form-group">
+          <label>Visitor Name *</label>
+          <input type="text" id="rc-name" placeholder="Jane Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Vehicle Plate</label>
+          <input type="text" id="rc-plate" placeholder="CA 123-456">
+        </div>
+        <div class="form-group">
+          <label>Schedule Type *</label>
+          <select id="rc-schedule" required>
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+            <option value="weekdays">Weekdays</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Valid From</label>
+            <input type="date" id="rc-from">
+          </div>
+          <div class="form-group">
+            <label>Valid Until</label>
+            <input type="date" id="rc-until">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Recurring</button>
+        </div>
+      </form>
+    </div>
+  `;
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.body.appendChild(overlay);
+
+  document.getElementById('recurring-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const { createRecurringVisitor } = await import('../api.js');
+    await createRecurringVisitor({
+      apartment_id: aptId,
+      visitor_name: document.getElementById('rc-name').value,
+      vehicle_plate: document.getElementById('rc-plate').value || null,
+      schedule_type: document.getElementById('rc-schedule').value,
+      valid_from: document.getElementById('rc-from').value || null,
+      valid_until: document.getElementById('rc-until').value || null,
+    });
+    closeModal();
+    alert('Recurring visitor added!');
+    location.reload();
+  };
+};
+
+// ── Edit Recurring Visitor Modal ──
+window.showEditRecurring = (recurringId, aptId, name, plate, schedule, isActive) => {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay'; overlay.id = 'active-modal';
+  overlay.innerHTML = `
+    <div class="modal-content">
+      <h3>Edit Recurring Visitor</h3>
+      <form id="recurring-edit-form">
+        <div class="form-group">
+          <label>Visitor Name</label>
+          <input type="text" id="rc-edit-name" value="${name}" required>
+        </div>
+        <div class="form-group">
+          <label>Vehicle Plate</label>
+          <input type="text" id="rc-edit-plate" value="${plate}">
+        </div>
+        <div class="form-group">
+          <label>Schedule</label>
+          <select id="rc-edit-schedule">
+            <option value="daily" ${schedule === 'daily' ? 'selected' : ''}>Daily</option>
+            <option value="weekly" ${schedule === 'weekly' ? 'selected' : ''}>Weekly</option>
+            <option value="weekdays" ${schedule === 'weekdays' ? 'selected' : ''}>Weekdays</option>
+            <option value="custom" ${schedule === 'custom' ? 'selected' : ''}>Custom</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="rc-edit-active" ${isActive ? 'checked' : ''}> Active</label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  `;
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.body.appendChild(overlay);
+
+  document.getElementById('recurring-edit-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const { updateRecurringVisitor } = await import('../api.js');
+    await updateRecurringVisitor(recurringId, {
+      visitor_name: document.getElementById('rc-edit-name').value,
+      vehicle_plate: document.getElementById('rc-edit-plate').value || null,
+      schedule_type: document.getElementById('rc-edit-schedule').value,
+      is_active: document.getElementById('rc-edit-active').checked,
+    });
+    closeModal();
+    location.reload();
+  };
+};
+
+// ── Delete Recurring Visitor ──
+window.deleteRecurring = async (recurringId) => {
+  if (!confirm('Delete this recurring visitor?')) return;
+  const { deleteRecurringVisitor } = await import('../api.js');
+  await deleteRecurringVisitor(recurringId);
+  location.reload();
+};
+
 // ── Revoke PIN ──
 window.revokePin = async (pinId) => {
   if (!confirm('Revoke this PIN?')) return;
@@ -215,6 +367,7 @@ function layout(body) {
   const isBodyCorp = roles.includes('body_corp_admin') || roles.includes('super_admin');
   const isManager = roles.includes('property_admin') || isBodyCorp;
   const isResident = roles.includes('resident');
+  const isSecurity = roles.includes('security');
 
   const links = [
     { hash: '#/', label: 'Dashboard', icon: '🏠' },

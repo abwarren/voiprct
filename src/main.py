@@ -42,11 +42,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(router)
 
 
+# ── Health — registered before static/catch-all so it takes precedence ────
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok", "version": "1.0.0"}
+
+
 # ── Static Files (Web Dashboard) ──────────────────────────────────────────────
+
 
 import os
 
@@ -73,11 +81,6 @@ if os.path.isdir(WEB_DIR):
 async def websocket_gateway(ws: WebSocket):
     """Real-time signalling gateway for gate calls."""
     await ws_handler(ws, ws.app.state.db_pool)
-
-
-@app.get("/health")
-async def health():
-    return {"status": "ok", "version": "1.0.0"}
 
 
 @app.exception_handler(Exception)

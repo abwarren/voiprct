@@ -12,6 +12,16 @@ echo "╔═══════════════════════�
 echo "║     AnfieldVoice — Docker Deploy        ║"
 echo "╚══════════════════════════════════════════╝"
 
+# ── DOMAIN check ──────────────────────────────────────────────────────────────
+if [ -z "${ANFIELDVOICE_DOMAIN:-}" ]; then
+    echo "  ℹ️  ANFIELDVOICE_DOMAIN not set — skipping nginx setup."
+    echo "  Set ANFIELDVOICE_DOMAIN=yourdomain.com in .env to enable nginx steps."
+    echo ""
+    SKIP_NGINX=true
+else
+    SKIP_NGINX=false
+fi
+
 # ── .env check ─────────────────────────────────────────────────────────────
 if [ ! -f .env ]; then
     echo ""
@@ -69,3 +79,36 @@ echo ""
 echo "Logs:  docker compose logs -f"
 echo "Stop:  docker compose down"
 echo ""
+
+# ── Nginx Reverse Proxy Setup (optional) ───────────────────────────────────
+if [ "$SKIP_NGINX" = false ]; then
+    echo "╔══════════════════════════════════════════╗"
+    echo "║     Nginx SSL Setup                     ║"
+    echo "╚══════════════════════════════════════════╝"
+    echo ""
+    echo "  Config: deploy/nginx.conf"
+    echo "  To install nginx and set up SSL termination:"
+    echo ""
+    echo "  # 1. Install nginx"
+    echo "  sudo apt update && sudo apt install -y nginx certbot python3-certbot-nginx"
+    echo ""
+    echo "  # 2. Copy nginx config"
+    echo "  sudo cp deploy/nginx.conf /etc/nginx/sites-available/anfieldvoice"
+    echo "  sudo sed -i 's/anfieldvoice\\.example\\.com/${ANFIELDVOICE_DOMAIN}/g' \\"
+    echo "      /etc/nginx/sites-available/anfieldvoice"
+    echo "  sudo ln -sf /etc/nginx/sites-available/anfieldvoice \\"
+    echo "      /etc/nginx/sites-enabled/"
+    echo ""
+    echo "  # 3. Obtain SSL certificate (replaces placeholder cert paths)"
+    echo "  sudo mkdir -p /var/www/html"
+    echo "  sudo certbot --nginx -d ${ANFIELDVOICE_DOMAIN}"
+    echo ""
+    echo "  # 4. Verify and restart"
+    echo "  sudo nginx -t && sudo systemctl reload nginx"
+    echo ""
+    echo "  ── Access ──"
+    echo "  Web:  https://${ANFIELDVOICE_DOMAIN}"
+    echo "  API:  https://${ANFIELDVOICE_DOMAIN}/health"
+    echo "  WS:   wss://${ANFIELDVOICE_DOMAIN}/ws"
+    echo ""
+fi

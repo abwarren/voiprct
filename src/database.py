@@ -22,7 +22,12 @@ async def create_pool() -> asyncpg.Pool:
 
 
 async def init_db(pool: asyncpg.Pool) -> None:
-    """Run schema.sql and seed.sql against the database."""
+    """Run schema.sql and seed.sql against the database.
+
+    Idempotent — skips tables/objects that already exist so this works
+    both as a first-run initialiser and when the schema is already loaded
+    (e.g. via PostgreSQL's /docker-entrypoint-initdb.d/).
+    """
     import os
 
     schema_path = os.path.join(os.path.dirname(__file__), "..", "db", "schema.sql")
@@ -33,4 +38,11 @@ async def init_db(pool: asyncpg.Pool) -> None:
             if os.path.exists(path):
                 with open(path) as f:
                     sql = f.read()
-                await conn.execute(sql)
+                try:
+                    await conn.execute(sql)
+                except asyncpg.exceptions.DuplicateTableError:
+                    pass  # tables already exist — Docker init-db ran first
+                except asyncpg.exceptions.DuplicateObjectError:
+                    pass  # extensions, types, etc. already exist
+                except asyncpg.exceptions.UniqueViolationError:
+                    pass  # seed data already inserted

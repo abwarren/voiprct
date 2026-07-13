@@ -1,0 +1,61 @@
+# ── AnfieldVoice — Docker Compose ─────────────────────────────────────────
+# Production stack: FastAPI app + PostgreSQL
+# ──────────────────────────────────────────────────────────────────────────
+
+services:
+  app:
+    build: .
+    container_name: anfieldvoice-app
+    restart: unless-stopped
+    ports:
+      - "${ANFIELDVOICE_PORT:-8000}:8000"
+    environment:
+      - ANFIELDVOICE_DB_HOST=${ANFIELDVOICE_DB_HOST:-db}
+      - ANFIELDVOICE_DB_PORT=${ANFIELDVOICE_DB_PORT:-5432}
+      - ANFIELDVOICE_DB_USER=${ANFIELDVOICE_DB_USER:-anfieldvoice}
+      - ANFIELDVOICE_DB_PASSWORD=${ANFIELDVOICE_DB_PASSWORD:-changeme}
+      - ANFIELDVOICE_DB_NAME=${ANFIELDVOICE_DB_NAME:-anfieldvoice}
+      - ANFIELDVOICE_HOST=0.0.0.0
+      - ANFIELDVOICE_PORT=8000
+      - ANFIELDVOICE_WORKERS=${ANFIELDVOICE_WORKERS:-2}
+      - ANFIELDVOICE_JWT_SECRET=${ANFIELDVOICE_JWT_SECRET:-}
+      - ANFIELDVOICE_DEBUG=false
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8000/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - anfieldvoice-net
+
+  db:
+    image: postgres:16-alpine
+    container_name: anfieldvoice-db
+    restart: unless-stopped
+    volumes:
+      - anfieldvoice-pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    environment:
+      - POSTGRES_USER=${ANFIELDVOICE_DB_USER:-anfieldvoice}
+      - POSTGRES_PASSWORD=${ANFIELDVOICE_DB_PASSWORD:-changeme}
+      - POSTGRES_DB=${ANFIELDVOICE_DB_NAME:-anfieldvoice}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ANFIELDVOICE_DB_USER:-anfieldvoice} -d ${ANFIELDVOICE_DB_NAME:-anfieldvoice}"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    networks:
+      - anfieldvoice-net
+
+volumes:
+  anfieldvoice-pgdata:
+
+networks:
+  anfieldvoice-net:
+    driver: bridge

@@ -13,3 +13,6 @@ venv/
 android/
 *.apk
 *.aab
+.expo/
+node_modules/
+_setup_remote.sh
